@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/server";
 import { InfoIcon } from "lucide-react";
-import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
 import { Suspense } from "react";
+import Link from "next/link";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 async function UserDetails() {
   const supabase = await createClient();
@@ -34,9 +35,28 @@ export default function ProtectedPage() {
           </Suspense>
         </pre>
       </div>
-      <div>
-        <h2 className="font-bold text-2xl mb-4">Next steps</h2>
-        <FetchDataSteps />
+      {/* Artwork navigation tiles */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-xl mt-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>View Artworks</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="w-full">
+              <Link href="/protected/artwork">Go to Artworks</Link>
+            </Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Add Artwork</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="w-full" variant="secondary">
+              <Link href="/protected/artwork/add">Add New Artwork</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
