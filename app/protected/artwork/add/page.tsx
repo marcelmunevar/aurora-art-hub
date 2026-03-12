@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import CreateArtworkForm from "@/components/artwork-form";
+import { Suspense } from "react";
 
 async function ArtworkForm() {
   const supabase = await createClient();
@@ -14,5 +15,9 @@ async function ArtworkForm() {
 }
 
 export default async function ProtectedPage() {
-  return <ArtworkForm />;
+  return (
+    <Suspense>
+      <ArtworkForm />
+    </Suspense>
+  );
 }
