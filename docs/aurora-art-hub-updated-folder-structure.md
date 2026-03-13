@@ -1,6 +1,6 @@
-# Aurora Art Hub Updated Folder Structure (MVP + Artwork Management)
+# Aurora Art Hub Updated Folder Structure (MVP + Art Management)
 
-Here is an updated Aurora Art Hub folder structure with bullets. It is still MVP-friendly, but includes extra components needed for adding/editing artwork (modal, form, uploader, etc.).
+Here is an updated Aurora Art Hub folder structure with bullets. It is still MVP-friendly, but includes extra components needed for adding/editing art (modal, form, uploader, etc.).
 
 - `aurora-art-hub`
   - `app`
@@ -14,30 +14,30 @@ Here is an updated Aurora Art Hub folder structure with bullets. It is still MVP
         - `page.tsx` (tag results page)
     - `art`
       - `[artSlug]`
-        - `page.tsx` (public artwork page)
+        - `page.tsx` (public art page)
     - `artist`
       - `[artistSlug]`
-        - `page.tsx` (artist profile + artwork management if owner)
+        - `page.tsx` (artist profile + art management if owner)
 
     - `about`
       - `page.tsx`
 
 - `components`
-  - `artwork`
-    - `ArtworkCard.tsx` (art preview card used in grids)
-    - `ArtworkGrid.tsx` (list of artworks)
-    - `ArtworkPage.tsx` (artwork detail layout)
+  - `art`
+    - `ArtCard.tsx` (art preview card used in grids)
+    - `ArtGrid.tsx` (list of art)
+    - `ArtPage.tsx` (art detail layout)
   - `artist`
     - `ArtistProfile.tsx`
-    - `ArtistArtworkList.tsx` (list of artworks on profile page)
-  - `artwork-form` (new section for managing artworks)
-    - `AddArtworkButton.tsx`
-    - `AddArtworkModal.tsx`
-    - `EditArtworkModal.tsx`
-    - `ArtworkForm.tsx`
-    - `ArtworkImageUploader.tsx`
+    - `ArtistArtList.tsx` (list of art on profile page)
+  - `art-form` (new section for managing art)
+    - `AddArtButton.tsx`
+    - `AddArtModal.tsx`
+    - `EditArtModal.tsx`
+    - `ArtForm.tsx`
+    - `ArtImageUploader.tsx`
     - `TagSelector.tsx`
-    - `DeleteArtworkButton.tsx`
+    - `DeleteArtButton.tsx`
   - `tags`
     - `TagList.tsx`
     - `TagBadge.tsx`
@@ -58,13 +58,13 @@ Here is an updated Aurora Art Hub folder structure with bullets. It is still MVP
     - `server.ts`
     - `middleware.ts`
   - `queries`
-    - `artworks.ts`
+    - `art.ts`
     - `artists.ts`
     - `tags.ts`
   - `utils.ts`
 
 - `types`
-  - `artwork.ts`
+  - `art.ts`
   - `artist.ts`
   - `tag.ts`
 
@@ -82,15 +82,15 @@ Artist goes to:
 
 If they own the profile, they see:
 
-- `AddArtworkButton`
+- `AddArtButton`
 
 Click opens:
 
-- `AddArtworkModal`
+- `AddArtModal`
 
 Inside modal:
 
-- `ArtworkForm`
+- `ArtForm`
 - `title`
 - `description`
 - `image uploader`
@@ -100,9 +100,9 @@ Inside modal:
 
 Upload handled by:
 
-- `ArtworkImageUploader`
+- `ArtImageUploader`
 
 After submit:
 
-- artwork stored in Supabase
+- art stored in Supabase
 - image stored in Supabase Storage
