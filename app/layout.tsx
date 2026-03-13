@@ -45,8 +45,14 @@ export default function RootLayout({
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Aurora Art Hub</Link>
-                    <div className="flex items-center gap-2"></div>
+                      <Link href="/">Aurora Art Hub</Link>
+                      <div className="flex items-center gap-2">
+                       <Link href="/search">Search</Link>
+                       <Link href="/tags">Tags</Link>
+                       <Link href="/art">Art</Link>
+                       <Link href="/artist">Artists</Link>
+                       <Link href="/about">About</Link>
+                      </div>
                   </div>
                   {!hasEnvVars ? (
                     <EnvVarWarning />
