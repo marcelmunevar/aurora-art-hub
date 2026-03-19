@@ -13,11 +13,20 @@ Here is an updated Aurora Art Hub folder structure with bullets. It is still MVP
       - `[tagSlug]`
         - `page.tsx` (tag results page)
     - `art`
+      - `page.tsx` (all art page)
+      - `add`
+        - `page.tsx` (add new art page)
       - `[artSlug]`
         - `page.tsx` (public art page)
+        - `edit`
+          - `page.tsx` (edit art page)
     - `artist`
+      - `page.tsx` (all artists page)
       - `[artistSlug]`
-        - `page.tsx` (artist profile + art management if owner)
+        - `page.tsx` (artist profile)
+    - `profile`
+      - `edit`
+        - `page.tsx` (edit artist profile page — only accessible by logged-in user)
 
     - `about`
       - `page.tsx`
@@ -30,10 +39,9 @@ Here is an updated Aurora Art Hub folder structure with bullets. It is still MVP
   - `artist`
     - `ArtistProfile.tsx`
     - `ArtistArtList.tsx` (list of art on profile page)
+    - `ArtistForm.tsx` (for editing artist profile)
   - `art-form` (new section for managing art)
-    - `AddArtButton.tsx`
-    - `AddArtModal.tsx`
-    - `EditArtModal.tsx`
+    - `AddArtButton.tsx` (optional, could link to /art/add)
     - `ArtForm.tsx`
     - `ArtImageUploader.tsx`
     - `TagSelector.tsx`
@@ -67,6 +75,7 @@ Here is an updated Aurora Art Hub folder structure with bullets. It is still MVP
   - `art.ts`
   - `artist.ts`
   - `tag.ts`
+  - `user.ts`
 
 - `public`
   - `images`
@@ -76,27 +85,39 @@ Here is an updated Aurora Art Hub folder structure with bullets. It is still MVP
 
 ## Example Flow With This Structure
 
-Artist goes to:
+Add art:
 
-- `/artist/jane-doe`
+- `/art/add/page.tsx` (add new art page)
+  - `ArtForm`
+  - `title` (exists in art table)
+  - `description` (exists in art table)
+  - `artist profile` (**Note:** art should be tied to `artist_id`, not directly to `user_id`)
+  - `image uploader` (**Note:** art table is missing an image field, e.g. `image_url`)
+  - `tag selector` (**Note:** art table is missing tags, consider a relation or array)
+  - `Etsy link` (**Note:** art table is missing `etsy_link` field)
+  - `Instagram link` (**Note:** art table is missing `instagram_link` field)
 
-If they own the profile, they see:
+Edit art:
 
-- `AddArtButton`
+- `/art/[artSlug]/edit/page.tsx` (edit art page)
+  - `ArtForm` (pre-filled)
+  - `image uploader`
+  - `tag selector`
 
-Click opens:
+Artist profile flow:
 
-- `AddArtModal`
-
-Inside modal:
-
-- `ArtForm`
-- `title`
-- `description`
-- `image uploader`
-- `tag selector`
-- `Etsy link`
-- `Instagram link`
+- `/profile/edit/page.tsx` (edit artist profile page)
+  - `ArtistForm` (pre-filled)
+  - Example fields:
+    - `name` (should exist in artist table)
+    - `bio` (should exist in artist table)
+    - `avatar` (add `avatar_url` field to artist table)
+    - `Etsy link` (add `etsy_link` field to artist table)
+    - `Instagram link` (add `instagram_link` field to artist table)
+    - `website` (add `website` field to artist table)
+    - `location` (add `location` field to artist table)
+  - **Note:** The artist table stores public profile data and links back to `auth.users` through `user_id`.
+  - **Relationship:** one authenticated user maps to one artist profile.
 
 Upload handled by:
 
