@@ -89,6 +89,7 @@ Add art:
 
 - `/art/add/page.tsx` (add new art page)
   - `ArtForm`
+  - `slug` (should exist in art table for `/art/[artSlug]` routes)
   - `title` (exists in art table)
   - `description` (exists in art table)
   - `artist profile` (**Note:** art should be tied to `artist_id`, not directly to `user_id`)
@@ -109,6 +110,7 @@ Artist profile flow:
 - `/profile/edit/page.tsx` (edit artist profile page)
   - `ArtistForm` (pre-filled)
   - Example fields:
+    - `slug` (should exist in artist table for `/artist/[artistSlug]` routes)
     - `name` (should exist in artist table)
     - `bio` (should exist in artist table)
     - `avatar` (add `avatar_url` field to artist table)

@@ -1,6 +1,7 @@
 export interface Artist {
   id: number;
   user_id: string;
+  slug: string;
   name: string;
   bio: string | null;
   avatar_url: string | null;
@@ -12,7 +13,7 @@ export interface Artist {
 }
 
 export interface CreateArtistInput {
-  user_id: string;
+  slug: string;
   name: string;
   bio?: string | null;
   avatar_url?: string | null;
@@ -24,6 +25,7 @@ export interface CreateArtistInput {
 }
 
 export interface UpdateArtistInput {
+  slug?: string;
   name?: string;
   bio?: string | null;
   avatar_url?: string | null;
