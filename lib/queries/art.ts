@@ -6,7 +6,7 @@ import {
   createUnauthorizedQueryError,
 } from "./errors";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentUserArtist } from "@/lib/queries/artists";
+import { getCurrentUserArtist } from "@/lib/queries/artist";
 import type { Art, CreateArtInput, UpdateArtInput } from "@/types/art";
 
 const ART_COLUMNS = "id, artist_id, slug, title, description, is_public";
