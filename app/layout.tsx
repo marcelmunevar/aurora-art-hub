@@ -48,10 +48,9 @@ export default function RootLayout({
                     <Link href="/">Aurora Art Hub</Link>
                     <div className="flex items-center gap-2">
                       <Link href="/search">Search</Link>
-                      <Link href="/tags">Tags</Link>
                       <Link href="/art">Art</Link>
                       <Link href="/artist">Artists</Link>
-                      <Link href="/about">About</Link>
+                      <Link href="/profile">Profile</Link>
                     </div>
                   </div>
                   {!hasEnvVars ? (
