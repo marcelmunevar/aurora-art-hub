@@ -1,11 +1,12 @@
 # Aurora Art Hub Recommended Folder Structure
 
-This structure keeps the app simple by centralizing data access in `lib/queries/` and keeping all reusable UI in `components/`.
+This structure keeps the app simple by centralizing data access in `lib/queries/`, using route-local component folders for domain pages, and reserving `components/` for shared auth and UI building blocks.
 
 ## Goals
 
-- Keep `app/` focused on routes, layouts, and pages.
-- Keep all components in `components/`, including shared domain components and page-level UI components.
+- Keep `app/` focused on routes, layouts, pages, and route-local domain components.
+- Keep domain-specific components close to the routes that use them.
+- Keep `components/` dedicated to shared auth components and reusable UI primitives.
 - Keep Supabase access out of UI components by using `lib/queries/`.
 - Keep auth-sensitive logic on the server.
 - Keep both read and write operations in the `lib/queries/` layer for consistency.
@@ -21,6 +22,7 @@ aurora-art-hub/
 
     art/
       page.tsx                        # All art page
+      _components/                    # Art-only route components
       add/
         page.tsx                      # Add new art page
       [artSlug]/
@@ -30,11 +32,13 @@ aurora-art-hub/
 
     artist/
       page.tsx                        # All artists page
+      _components/                    # Artist-only route components
       [artistSlug]/
         page.tsx                      # Public artist profile page
 
     profile/
       page.tsx                        # Logged-in user's artist profile editor
+      _components/                    # Profile-only route components
 
     auth/
       confirm/
@@ -56,13 +60,14 @@ aurora-art-hub/
       page.tsx                        # Example protected page
 
   components/
-    art/
-      ArtCard.tsx                     # Art preview card
-      ArtGrid.tsx                     # Art list/grid renderer
-
-    artist/
-      ArtistForm.tsx                  # Artist edit form
-      ArtistProfile.tsx               # Artist profile UI
+    auth-button.tsx
+    env-var-warning.tsx
+    forgot-password-form.tsx
+    login-form.tsx
+    logout-button.tsx
+    sign-up-form.tsx
+    theme-switcher.tsx
+    update-password-form.tsx
 
     ui/                               # Reusable design-system primitives
       badge.tsx
@@ -73,14 +78,6 @@ aurora-art-hub/
       dropdown-menu.tsx
       input.tsx
       label.tsx
-
-    auth-button.tsx
-    forgot-password-form.tsx
-    login-form.tsx
-    logout-button.tsx
-    sign-up-form.tsx
-    theme-switcher.tsx
-    update-password-form.tsx
 
   lib/
     queries/
@@ -116,18 +113,19 @@ aurora-art-hub/
 
 ### `app/`
 
-Use `app/` for route definitions, layouts, pages, and route handlers.
+Use `app/` for route definitions, layouts, pages, route handlers, and route-local domain components.
 
 - Prefer server components by default.
 - Add client components only when interactivity actually requires them.
+- Put feature-specific UI in nearby `_components/` folders when it is only used by a single route area such as `art/`, `artist/`, or `profile/`.
 
 ### `components/`
 
-Use `components/` for all components in the app.
+Use `components/` only for shared auth-related components and reusable UI pieces.
 
 - `components/ui/` should contain low-level primitives.
-- `components/art/` and `components/artist/` should contain domain-specific components.
-- Page-specific components can also live in `components/`.
+- Shared auth flows such as login, sign-up, logout, and password reset forms belong here.
+- Avoid placing art-, artist-, or profile-specific page components here if they are only used in one route group.
 
 ### `lib/queries/`
 
@@ -148,7 +146,8 @@ Use `lib/validation/` for form schemas and request validation.
 
 - `app/profile/page.tsx` should remain the authenticated owner-edit page.
 - `app/artist/[artistSlug]/page.tsx` should remain the public artist profile page.
-- All components belong in `components/`.
+- Route-specific art, artist, and profile UI should live in local `_components/` folders under `app/`.
+- Shared auth and design-system components should live in `components/`.
 - Routing and page orchestration belong in `app/`.
 - Reads and writes belong in `lib/queries/`.
 - Validation belongs in `lib/validation/`.
