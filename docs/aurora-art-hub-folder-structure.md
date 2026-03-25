@@ -2,10 +2,7 @@
 
 - `aurora-art-hub`
   - `app`
-    - `layout.tsx`
     - `page.tsx` (homepage)
-    - `search`
-      - `page.tsx`
     - `art`
       - `page.tsx` (all art page)
       - `add`
@@ -19,17 +16,12 @@
       - `[artistSlug]`
         - `page.tsx` (artist profile)
     - `profile`
-      - `edit`
-        - `page.tsx` (edit artist profile page — only accessible by logged-in user)
-
-    - `about`
-      - `page.tsx`
+      - `page.tsx` (edit artist profile page — only accessible by logged-in user)
 
 - `components`
   - `art`
     - `ArtCard.tsx` (art preview card used in grids)
     - `ArtGrid.tsx` (list of art)
-    - `ArtPage.tsx` (art detail layout)
   - `artist`
     - `ArtistProfile.tsx`
     - `ArtistForm.tsx` (for editing artist profile)
