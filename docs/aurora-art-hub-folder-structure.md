@@ -97,7 +97,6 @@ aurora-art-hub/
     validation/                       # Optional: form/request validation schemas
       art.ts
       artist.ts
-      auth.ts
 
     utils.ts
 
