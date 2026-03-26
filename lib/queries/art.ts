@@ -7,9 +7,15 @@ import {
 } from "./errors";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
-import type { Art, CreateArtInput, UpdateArtInput } from "@/types/art";
+import type {
+  Art,
+  CreateArtInput,
+  PublicArt,
+  UpdateArtInput,
+} from "@/types/art";
 
 const ART_COLUMNS = "id, artist_id, slug, title, description, is_public";
+const PUBLIC_ART_COLUMNS = `${ART_COLUMNS}, artist:artist_id(id, name, slug)`;
 
 async function getCurrentUserArtistId(): Promise<number> {
   const artist = await getCurrentUserArtist();
@@ -88,12 +94,12 @@ export async function getCurrentUserArt(): Promise<Art[]> {
   return (data ?? []) as Art[];
 }
 
-export async function getPublicArt(): Promise<Art[]> {
+export async function getPublicArt(): Promise<PublicArt[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("art")
-    .select(ART_COLUMNS)
+    .select(PUBLIC_ART_COLUMNS)
     .eq("is_public", true)
     .order("id", { ascending: false });
 
@@ -101,7 +107,7 @@ export async function getPublicArt(): Promise<Art[]> {
     throw createPostgrestQueryError("Failed to fetch public art.", error);
   }
 
-  return (data ?? []) as Art[];
+  return (data ?? []) as PublicArt[];
 }
 
 export async function createArt(input: CreateArtInput): Promise<Art> {

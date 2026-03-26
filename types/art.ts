@@ -1,3 +1,5 @@
+import type { Artist } from "@/types/artist";
+
 export interface Art {
   id: number;
   artist_id: number;
@@ -12,6 +14,10 @@ export interface CreateArtInput {
   title: string;
   description?: string | null;
   is_public?: boolean;
+}
+
+export interface PublicArt extends Art {
+  artist: Pick<Artist, "id" | "name" | "slug"> | null;
 }
 
 export interface UpdateArtInput {
