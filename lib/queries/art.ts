@@ -17,6 +17,10 @@ import type {
 const ART_COLUMNS = "id, artist_id, slug, title, description, is_public";
 const PUBLIC_ART_COLUMNS = `${ART_COLUMNS}, artist:artist_id(id, name, slug)`;
 
+type PublicArtRow = Omit<PublicArt, "artist"> & {
+  artist: NonNullable<PublicArt["artist"]>[] | null;
+};
+
 async function getCurrentUserArtistId(): Promise<number> {
   const artist = await getCurrentUserArtist();
 
@@ -107,7 +111,10 @@ export async function getPublicArt(): Promise<PublicArt[]> {
     throw createPostgrestQueryError("Failed to fetch public art.", error);
   }
 
-  return (data ?? []) as PublicArt[];
+  return ((data ?? []) as PublicArtRow[]).map(({ artist, ...art }) => ({
+    ...art,
+    artist: artist?.[0] ?? null,
+  }));
 }
 
 export async function createArt(input: CreateArtInput): Promise<Art> {
