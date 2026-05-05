@@ -14,7 +14,8 @@ import type {
   UpdateArtInput,
 } from "@/types/art";
 
-const ART_COLUMNS = "id, artist_id, slug, title, description, is_public";
+const ART_COLUMNS =
+  "id, artist_id, slug, title, description, is_public, instagram_url";
 const PUBLIC_ART_COLUMNS = `${ART_COLUMNS}, artist:artist_id(id, name, slug)`;
 
 type PublicArtRow = Omit<PublicArt, "artist"> & {

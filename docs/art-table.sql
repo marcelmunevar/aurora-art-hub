@@ -8,7 +8,8 @@ create table
         slug text not null unique,
         title text not null,
         description text,
-        is_public boolean not null default false
+        is_public boolean not null default false,
+        instagram_url text
     );
 
 -- Turn on row-level security so policies are enforced.

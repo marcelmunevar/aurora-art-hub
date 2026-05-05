@@ -7,6 +7,7 @@ export interface Art {
   title: string;
   description: string | null;
   is_public: boolean;
+  instagram_url: string | null;
 }
 
 export interface CreateArtInput {
@@ -14,6 +15,7 @@ export interface CreateArtInput {
   title: string;
   description?: string | null;
   is_public?: boolean;
+  instagram_url?: string | null;
 }
 
 export interface PublicArt extends Art {
@@ -25,4 +27,5 @@ export interface UpdateArtInput {
   title?: string;
   description?: string | null;
   is_public?: boolean;
+  instagram_url?: string | null;
 }

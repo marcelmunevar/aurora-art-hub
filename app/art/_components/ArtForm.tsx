@@ -48,6 +48,7 @@ function getArtInput(formData: FormData): CreateArtInput {
     title: getStringValue(formData, "title") ?? "",
     description: getStringValue(formData, "description"),
     is_public: formData.has("is_public"),
+    instagram_url: getStringValue(formData, "instagram_url"),
   };
 }
 
@@ -94,6 +95,7 @@ export async function ArtForm(props: ArtFormProps) {
   const defaultTitle = art?.title ?? "";
   const defaultDescription = art?.description ?? "";
   const defaultIsPublic = art?.is_public ?? false;
+  const defaultInstagramUrl = art?.instagram_url ?? "";
   const errorRedirectBasePath =
     mode === "create" ? "/art/add" : `/art/${currentSlug}/edit`;
 
@@ -249,6 +251,17 @@ export async function ArtForm(props: ArtFormProps) {
               </span>
             </span>
           </label>
+
+          <div className="grid gap-2">
+            <Label htmlFor="instagram_url">Instagram post URL</Label>
+            <Input
+              id="instagram_url"
+              name="instagram_url"
+              type="url"
+              placeholder="https://www.instagram.com/p/..."
+              defaultValue={defaultInstagramUrl}
+            />
+          </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button type="submit" className="w-full sm:w-auto">

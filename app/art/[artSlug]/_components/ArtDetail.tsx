@@ -7,6 +7,7 @@ import { getArtistById, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LinkPreview } from "@/components/link-preview";
 
 export async function ArtDetail({ artSlug }: { artSlug: string }) {
   const art = await getArtBySlug(artSlug);
@@ -76,6 +77,15 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
               Edit artwork
             </Link>
           </Button>
+        </div>
+      )}
+
+      {art.instagram_url && (
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Instagram
+          </p>
+          <LinkPreview url={art.instagram_url} />
         </div>
       )}
     </section>
