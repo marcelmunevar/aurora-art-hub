@@ -35,10 +35,6 @@ function ArtListFallback() {
 }
 
 export default async function Page() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const isAuthenticated = !!data?.claims;
-
   return (
     <section className="flex flex-col gap-12">
       <div className="flex flex-col gap-8">
@@ -61,21 +57,33 @@ export default async function Page() {
         </Suspense>
       </div>
 
-      {isAuthenticated ? (
-        <div className="flex flex-col gap-8">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Your private artwork
-            </h2>
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-              Artwork you have kept private. Only you can see these.
-            </p>
-          </div>
-          <Suspense fallback={<ArtListFallback />}>
-            <ArtList type="private" />
-          </Suspense>
-        </div>
-      ) : null}
+      <Suspense>
+        <PrivateArtSection />
+      </Suspense>
     </section>
+  );
+}
+
+async function PrivateArtSection() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const isAuthenticated = !!data?.claims;
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="space-y-2">
+        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          Your private artwork
+        </h2>
+        <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+          Artwork you have kept private. Only you can see these.
+        </p>
+      </div>
+      <Suspense fallback={<ArtListFallback />}>
+        <ArtList type="private" />
+      </Suspense>
+    </div>
   );
 }
