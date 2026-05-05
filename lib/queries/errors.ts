@@ -40,7 +40,7 @@ export function createAuthQueryError(
   error: AuthError,
 ): QueryError {
   return new QueryError(message, {
-    code: error.code,
+    code: error.status === 401 ? "UNAUTHORIZED" : error.code,
     status: error.status,
   });
 }

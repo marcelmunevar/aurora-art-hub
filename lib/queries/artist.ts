@@ -19,22 +19,21 @@ const ARTIST_COLUMNS =
 
 async function getAuthenticatedUserId(): Promise<string> {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  const { data, error } = await supabase.auth.getClaims();
 
   if (error) {
     throw createAuthQueryError("Failed to fetch authenticated user.", error);
   }
 
-  if (!user) {
+  const userId = data?.claims?.sub;
+
+  if (!userId) {
     throw createUnauthorizedQueryError(
       "You must be signed in to perform this action.",
     );
   }
 
-  return user.id;
+  return userId;
 }
 
 export async function getArtistById(id: number): Promise<Artist | null> {
@@ -53,9 +52,7 @@ export async function getArtistById(id: number): Promise<Artist | null> {
   return data as Artist | null;
 }
 
-export async function getArtistBySlug(
-  slug: string,
-): Promise<Artist | null> {
+export async function getArtistBySlug(slug: string): Promise<Artist | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
