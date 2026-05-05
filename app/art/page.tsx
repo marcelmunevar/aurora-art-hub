@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { createClient } from "@/lib/supabase/server";
+import { ArtList } from "./_components/ArtList";
 
-import { PublicArtList } from "./_components/PublicArtList";
-
-function PublicArtListFallback() {
+function ArtListFallback() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: 6 }).map((_, index) => (
@@ -34,26 +34,48 @@ function PublicArtListFallback() {
   );
 }
 
-export default function Page() {
+export default async function Page() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const isAuthenticated = !!data?.claims;
+
   return (
-    <section className="flex flex-col gap-8">
-      <div className="space-y-3">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
-          Art
-        </p>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Explore public artwork
-          </h1>
-          <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-            Browse public artwork shared by Aurora Art Hub artists and jump into
-            each piece for more details.
+    <section className="flex flex-col gap-12">
+      <div className="flex flex-col gap-8">
+        <div className="space-y-3">
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Art
           </p>
+          <div className="space-y-2">
+            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+              Explore public artwork
+            </h2>
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+              Browse public artwork shared by Aurora Art Hub artists and jump
+              into each piece for more details.
+            </p>
+          </div>
         </div>
+        <Suspense fallback={<ArtListFallback />}>
+          <ArtList type="public" />
+        </Suspense>
       </div>
-      <Suspense fallback={<PublicArtListFallback />}>
-        <PublicArtList />
-      </Suspense>
+
+      {isAuthenticated ? (
+        <div className="flex flex-col gap-8">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+              Your private artwork
+            </h2>
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+              Artwork you have kept private. Only you can see these.
+            </p>
+          </div>
+          <Suspense fallback={<ArtListFallback />}>
+            <ArtList type="private" />
+          </Suspense>
+        </div>
+      ) : null}
     </section>
   );
 }

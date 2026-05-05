@@ -117,6 +117,25 @@ export async function getPublicArt(): Promise<PublicArt[]> {
   }));
 }
 
+export async function getPrivateArt(): Promise<PublicArt[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("art")
+    .select(PUBLIC_ART_COLUMNS)
+    .eq("is_public", false)
+    .order("id", { ascending: false });
+
+  if (error) {
+    throw createPostgrestQueryError("Failed to fetch public art.", error);
+  }
+
+  return ((data ?? []) as PublicArtRow[]).map(({ artist, ...art }) => ({
+    ...art,
+    artist: artist?.[0] ?? null,
+  }));
+}
+
 export async function createArt(input: CreateArtInput): Promise<Art> {
   const supabase = await createClient();
   const artistId = await getCurrentUserArtistId();

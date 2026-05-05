@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ExternalLink, Eye, FileText, Pencil, Plus } from "lucide-react";
+import {
+  ExternalLink,
+  Eye,
+  EyeOff,
+  FileText,
+  Pencil,
+  Plus,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPublicArt } from "@/lib/queries/art";
+import { getPublicArt, getPrivateArt } from "@/lib/queries/art";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 
@@ -24,7 +31,11 @@ function getArtInitials(title: string): string {
     .join("");
 }
 
-export async function PublicArtList() {
+type ArtListProps = {
+  type: "public" | "private";
+};
+
+export async function ArtList({ type }: ArtListProps) {
   let currentUserArtistId: number | null = null;
   let isAuthenticated = true;
 
@@ -39,16 +50,22 @@ export async function PublicArtList() {
     isAuthenticated = false;
   }
 
-  const artworks = await getPublicArt();
+  const artworks =
+    type === "public" ? await getPublicArt() : await getPrivateArt();
+
+  const emptyTitle =
+    type === "public" ? "No public artwork yet" : "No private artwork yet";
+  const emptyDescription =
+    type === "public"
+      ? "Artwork marked as public will appear here."
+      : "Artwork you keep private will appear here.";
 
   if (artworks.length === 0 && !isAuthenticated) {
     return (
       <Card className="border-dashed">
         <CardHeader>
-          <CardTitle>No public artwork yet</CardTitle>
-          <CardDescription>
-            Artwork marked as public will appear here.
-          </CardDescription>
+          <CardTitle>{emptyTitle}</CardTitle>
+          <CardDescription>{emptyDescription}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -59,10 +76,8 @@ export async function PublicArtList() {
       {artworks.length === 0 ? (
         <Card className="border-dashed">
           <CardHeader>
-            <CardTitle>No public artwork yet</CardTitle>
-            <CardDescription>
-              Artwork marked as public will appear here.
-            </CardDescription>
+            <CardTitle>{emptyTitle}</CardTitle>
+            <CardDescription>{emptyDescription}</CardDescription>
           </CardHeader>
         </Card>
       ) : null}
@@ -94,8 +109,12 @@ export async function PublicArtList() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="secondary" className="gap-1">
-                      <Eye className="h-3 w-3" />
-                      Public artwork
+                      {art.is_public ? (
+                        <Eye className="h-3 w-3" />
+                      ) : (
+                        <EyeOff className="h-3 w-3" />
+                      )}
+                      {art.is_public ? "Public" : "Private"}
                     </Badge>
                     <Badge variant="outline">Slug: {art.slug}</Badge>
                   </div>
@@ -103,13 +122,13 @@ export async function PublicArtList() {
               </div>
               <CardDescription className="line-clamp-4 min-h-24 text-sm leading-6">
                 {art.description?.trim() ||
-                  "This artwork does not have a public description yet."}
+                  "This artwork does not have a description yet."}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 space-y-3 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                <span>Artwork details available on the public page.</span>
+                <span>Artwork details available on the detail page.</span>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -132,7 +151,7 @@ export async function PublicArtList() {
         );
       })}
 
-      {isAuthenticated ? (
+      {type === "public" && isAuthenticated ? (
         <Card className="flex h-full min-h-72 items-center justify-center border-dashed p-6">
           <CardContent className="flex w-full items-center justify-center p-0">
             <Button asChild className="w-full sm:w-auto">
