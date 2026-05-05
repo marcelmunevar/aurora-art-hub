@@ -19,8 +19,21 @@ const ART_COLUMNS =
 const PUBLIC_ART_COLUMNS = `${ART_COLUMNS}, artist:artist_id(id, name, slug)`;
 
 type PublicArtRow = Omit<PublicArt, "artist"> & {
-  artist: NonNullable<PublicArt["artist"]>[] | null;
+  artist:
+    | NonNullable<PublicArt["artist"]>
+    | NonNullable<PublicArt["artist"]>[]
+    | null;
 };
+
+function normalizeEmbeddedArtist(
+  artist: PublicArtRow["artist"],
+): PublicArt["artist"] {
+  if (Array.isArray(artist)) {
+    return artist[0] ?? null;
+  }
+
+  return artist ?? null;
+}
 
 async function getCurrentUserArtistId(): Promise<number> {
   const artist = await getCurrentUserArtist();
@@ -114,7 +127,7 @@ export async function getPublicArt(): Promise<PublicArt[]> {
 
   return ((data ?? []) as PublicArtRow[]).map(({ artist, ...art }) => ({
     ...art,
-    artist: artist?.[0] ?? null,
+    artist: normalizeEmbeddedArtist(artist),
   }));
 }
 
@@ -133,7 +146,7 @@ export async function getPrivateArt(): Promise<PublicArt[]> {
 
   return ((data ?? []) as PublicArtRow[]).map(({ artist, ...art }) => ({
     ...art,
-    artist: artist?.[0] ?? null,
+    artist: normalizeEmbeddedArtist(artist),
   }));
 }
 
