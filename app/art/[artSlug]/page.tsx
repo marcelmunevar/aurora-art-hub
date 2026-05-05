@@ -1,16 +1,14 @@
 import { Suspense } from "react";
+import { ArtDetail } from "./_components/ArtDetail";
 
 export default function Page({ params }: PageProps<"/art/[artSlug]">) {
   return (
-    <div>
-      <div>
-        Slug is:{" "}
-        <Suspense fallback={<div>Loading...</div>}>
-          {params.then(({ artSlug }) => (
-            <>{artSlug}</>
-          ))}
-        </Suspense>
-      </div>
+    <div className="flex-1 w-full flex flex-col gap-8">
+      <Suspense fallback={<p className="text-muted-foreground">Loading...</p>}>
+        {params.then(({ artSlug }) => (
+          <ArtDetail artSlug={artSlug} />
+        ))}
+      </Suspense>
     </div>
   );
 }
