@@ -6,9 +6,9 @@ create table artist (
     slug text not null unique,
     name text not null,
     bio text,
-    avatar_url text,
     etsy_link text,
     instagram_link text,
+    redbubble_link text,
     website text,
     location text,
     is_public boolean not null default false

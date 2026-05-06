@@ -55,9 +55,9 @@ function getArtistInput(formData: FormData) {
     slug: name ? nameToSlug(name) : undefined,
     name,
     bio: getStringValue(formData, "bio"),
-    avatar_url: getStringValue(formData, "avatar_url"),
     etsy_link: getStringValue(formData, "etsy_link"),
     instagram_link: getStringValue(formData, "instagram_link"),
+    redbubble_link: getStringValue(formData, "redbubble_link"),
     website: getStringValue(formData, "website"),
     location: getStringValue(formData, "location"),
     is_public: formData.has("is_public"),
@@ -205,17 +205,6 @@ export async function ProfileForm({
 
           <div className="grid gap-5 md:grid-cols-2">
             <div className="grid gap-2">
-              <Label htmlFor="avatar_url">Avatar URL</Label>
-              <Input
-                id="avatar_url"
-                name="avatar_url"
-                type="url"
-                placeholder="https://example.com/avatar.jpg"
-                defaultValue={artist?.avatar_url ?? ""}
-              />
-            </div>
-
-            <div className="grid gap-2">
               <Label htmlFor="location">Location</Label>
               <Input
                 id="location"
@@ -259,6 +248,17 @@ export async function ProfileForm({
                 type="url"
                 placeholder="https://etsy.com/shop/yourshop"
                 defaultValue={artist?.etsy_link ?? ""}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="redbubble_link">Redbubble</Label>
+              <Input
+                id="redbubble_link"
+                name="redbubble_link"
+                type="url"
+                placeholder="https://redbubble.com/people/yourshop"
+                defaultValue={artist?.redbubble_link ?? ""}
               />
             </div>
           </div>

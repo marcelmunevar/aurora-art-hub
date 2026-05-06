@@ -15,7 +15,7 @@ import type {
 } from "@/types/artist";
 
 const ARTIST_COLUMNS =
-  "id, user_id, slug, name, bio, avatar_url, etsy_link, instagram_link, website, location, is_public";
+  "id, user_id, slug, name, bio, etsy_link, instagram_link, redbubble_link, website, location, is_public";
 
 async function getAuthenticatedUserId(): Promise<string> {
   const supabase = await createClient();
