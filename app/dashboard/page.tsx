@@ -19,7 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArtworkCard, ArtworkEmptyState } from "@/app/art/_components/ArtList";
 import { getCurrentUserArt } from "@/lib/queries/art";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 import { createClient } from "@/lib/supabase/server";
@@ -42,8 +41,6 @@ async function DashboardContent() {
 
   const artist = await getCurrentUserArtist();
   const artworks = artist ? await getCurrentUserArt() : [];
-  const publicArtworks = artworks.filter((art) => art.is_public);
-  const privateArtworks = artworks.filter((art) => !art.is_public);
   const publicCount = artworks.filter((art) => art.is_public).length;
   const privateCount = artworks.length - publicCount;
   const userEmail =
@@ -122,34 +119,6 @@ async function DashboardContent() {
           </div>
         </div>
       </div>
-
-      <OwnedArtworkSection
-        title="Your public artwork"
-        description="Published pieces currently visible in the gallery."
-        artworks={publicArtworks}
-        emptyTitle="No public artwork yet"
-        emptyDescription={
-          artist
-            ? "Publish a finished piece when you want it to appear in the public gallery."
-            : "Create your artist profile first, then publish artwork under your name."
-        }
-        emptyHref={artist ? "/art/add" : "/profile"}
-        emptyCta={artist ? "Add public artwork" : "Create profile"}
-      />
-
-      <OwnedArtworkSection
-        title="Private artwork"
-        description="Work in progress, drafts, and pieces you are keeping off the public gallery."
-        artworks={privateArtworks}
-        emptyTitle="No private artwork yet"
-        emptyDescription={
-          artist
-            ? "Keep draft work private until it is ready to share."
-            : "Create your artist profile first, then private pieces can live here."
-        }
-        emptyHref={artist ? "/art/add" : "/profile"}
-        emptyCta={artist ? "Add private artwork" : "Create profile"}
-      />
     </section>
   );
 }
@@ -237,72 +206,6 @@ function DashboardStatCard({
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {description}
       </p>
-    </div>
-  );
-}
-
-function OwnedArtworkSection({
-  title,
-  description,
-  artworks,
-  emptyTitle,
-  emptyDescription,
-  emptyHref,
-  emptyCta,
-}: {
-  title: string;
-  description: string;
-  artworks: Array<{
-    id: number;
-    slug: string;
-    title: string;
-    description: string | null;
-    is_public: boolean;
-  }>;
-  emptyTitle: string;
-  emptyDescription: string;
-  emptyHref: string;
-  emptyCta: string;
-}) {
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-2">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            {title}
-          </h2>
-          <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-            {description}
-          </p>
-        </div>
-        <div className="rounded-full border border-border/60 bg-muted/40 px-4 py-2 text-sm text-muted-foreground">
-          {artworks.length} piece{artworks.length === 1 ? "" : "s"}
-        </div>
-      </div>
-
-      {artworks.length === 0 ? (
-        <ArtworkEmptyState
-          title={emptyTitle}
-          description={emptyDescription}
-          actionHref={emptyHref}
-          actionLabel={emptyCta}
-        />
-      ) : (
-        <div className="grid gap-5 min-[520px]:grid-cols-2 min-[1080px]:grid-cols-3">
-          {artworks.map((art) => (
-            <ArtworkCard
-              key={art.id}
-              art={{
-                ...art,
-                artist: null,
-              }}
-              isOwner
-              hideArtist
-              hideOwnerBadge
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
