@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/card";
 import { HeroBubble } from "@/components/hero-bubble";
 import { StatCard } from "@/components/stat-card";
-import { ArtworkCard, ArtworkEmptyState } from "@/app/art/_components/ArtList";
+import { ArtworkCard, ArtworkEmptyState } from "@/components/art/ArtList";
 import { getArtsByArtistId } from "@/lib/queries/art";
 import { getArtistBySlug, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";

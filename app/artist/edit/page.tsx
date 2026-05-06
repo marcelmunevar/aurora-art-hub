@@ -11,7 +11,7 @@ import {
 import { QueryError } from "@/lib/queries/errors";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 
-import { ProfileForm } from "./_components/ProfileForm";
+import { ProfileForm } from "@/components/forms/ProfileForm";
 
 type ArtistEditPageProps = {
   searchParams?: Promise<{

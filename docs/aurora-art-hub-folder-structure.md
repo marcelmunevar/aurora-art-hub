@@ -1,12 +1,12 @@
 # Aurora Art Hub Recommended Folder Structure
 
-This structure keeps the app simple by centralizing data access in `lib/queries/`, using route-local component folders for domain pages, and reserving `components/` for shared auth and UI building blocks.
+This structure keeps the app simple by centralizing data access in `lib/queries/`, keeping `app/` focused on routes, and reserving `components/` for shared UI and domain building blocks.
 
 ## Goals
 
-- Keep `app/` focused on routes, layouts, pages, and route-local domain components.
-- Keep domain-specific components close to the routes that use them.
-- Keep `components/` dedicated to shared auth components and reusable UI primitives.
+- Keep `app/` focused on routes, layouts, pages, and route handlers.
+- Keep domain-specific UI components in `components/` instead of route-local folders.
+- Keep `components/` dedicated to shared auth components, reusable UI primitives, and domain components.
 - Keep Supabase access out of UI components by using `lib/queries/`.
 - Keep auth-sensitive logic on the server.
 - Keep both read and write operations in the `lib/queries/` layer for consistency.
@@ -22,7 +22,6 @@ aurora-art-hub/
 
     art/
       page.tsx                        # All art page
-      _components/                    # Art-only route components
       add/
         page.tsx                      # Add new art page
       [artSlug]/
@@ -32,13 +31,10 @@ aurora-art-hub/
 
     artist/
       page.tsx                        # All artists page
-      _components/                    # Artist-only route components
+      edit/
+        page.tsx                      # Logged-in artist profile editor
       [artistSlug]/
         page.tsx                      # Public artist profile page
-
-    profile/
-      page.tsx                        # Logged-in user's artist profile editor
-      _components/                    # Profile-only route components
 
     auth/
       confirm/
@@ -113,19 +109,19 @@ aurora-art-hub/
 
 ### `app/`
 
-Use `app/` for route definitions, layouts, pages, route handlers, and route-local domain components.
+Use `app/` for route definitions, layouts, pages, and route handlers.
 
 - Prefer server components by default.
 - Add client components only when interactivity actually requires them.
-- Put feature-specific UI in nearby `_components/` folders when it is only used by a single route area such as `art/`, `artist/`, or `profile/`.
+- Avoid placing local component folders inside `app/`; keep feature UI in `components/` instead.
 
 ### `components/`
 
-Use `components/` only for shared auth-related components and reusable UI pieces.
+Use `components/` for shared auth-related components, reusable UI pieces, and domain-specific view components.
 
 - `components/ui/` should contain low-level primitives.
 - Shared auth flows such as login, sign-up, logout, and password reset forms belong here.
-- Avoid placing art-, artist-, or profile-specific page components here if they are only used in one route group.
+- Domain-specific components such as art cards, artist details, and link previews should also live here in clear subfolders.
 
 ### `lib/queries/`
 
@@ -144,9 +140,9 @@ Use `lib/validation/` for form schemas and request validation.
 
 ## Practical Guidance For This Repo
 
-- `app/profile/page.tsx` should remain the authenticated owner-edit page.
+- `app/artist/edit/page.tsx` should remain the authenticated owner-edit page.
 - `app/artist/[artistSlug]/page.tsx` should remain the public artist profile page.
-- Route-specific art, artist, and profile UI should live in local `_components/` folders under `app/`.
+- Route-specific art and artist pages should import their UI from `components/`.
 - Shared auth and design-system components should live in `components/`.
 - Routing and page orchestration belong in `app/`.
 - Reads and writes belong in `lib/queries/`.

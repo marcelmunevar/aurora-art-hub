@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getCurrentUserArt, getPublicArt } from "@/lib/queries/art";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 import { createClient } from "@/lib/supabase/server";
-import { ArtList } from "./_components/ArtList";
+import { ArtList } from "@/components/art/ArtList";
 
 function ArtListFallback() {
   return (

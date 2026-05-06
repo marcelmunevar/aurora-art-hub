@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ArtistDetail } from "./_components/ArtistDetail";
+import { ArtistDetail } from "@/components/art/ArtistDetail";
 
 export default function Page({ params }: PageProps<"/artist/[artistSlug]">) {
   return (

@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { ArtForm } from "../_components/ArtForm";
+import { ArtForm } from "@/components/forms/ArtForm";
 
 type AddArtSearchParams = {
   error?: string;

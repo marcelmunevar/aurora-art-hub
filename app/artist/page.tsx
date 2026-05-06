@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getCurrentUserArtist, getPublicArtists } from "@/lib/queries/artist";
 import { createClient } from "@/lib/supabase/server";
-import { ArtistList } from "./_components/ArtistList";
+import { ArtistList } from "@/components/art/ArtistList";
 
 function ArtistListFallback() {
   return (

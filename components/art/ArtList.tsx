@@ -138,9 +138,7 @@ export async function ArtworkCard({
             </div>
           </Suspense>
         ) : null}
-        {art.etsy_url ? (
-          <EtsyPreview url={art.etsy_url} compact />
-        ) : null}
+        {art.etsy_url ? <EtsyPreview url={art.etsy_url} compact /> : null}
       </CardContent>
       <CardFooter className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
         <Button asChild className="w-full min-w-0 rounded-full md:flex-1">

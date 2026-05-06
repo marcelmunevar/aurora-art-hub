@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ArtDetail } from "./_components/ArtDetail";
+import { ArtDetail } from "@/components/art/ArtDetail";
 
 export default function Page({ params }: PageProps<"/art/[artSlug]">) {
   return (
