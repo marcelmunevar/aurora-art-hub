@@ -32,13 +32,7 @@ type ProfileFormProps = {
   successMessage?: string | null;
 };
 
-function getCreatePath(): string {
-  return "/artist/edit";
-}
-
-function getEditPath(slug: string | null | undefined): string {
-  return slug ? `/artist/${slug}/edit` : getCreatePath();
-}
+const EDIT_PATH = "/artist/edit";
 
 function getStringValue(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
@@ -83,7 +77,6 @@ export async function ProfileForm({
   }
 
   const artistId = artist?.id ?? null;
-  const currentEditPath = getEditPath(artist?.slug);
 
   async function submitProfile(formData: FormData) {
     "use server";
@@ -96,7 +89,7 @@ export async function ProfileForm({
       if (!result.success) {
         const message =
           result.error.issues[0]?.message ?? "Invalid profile data.";
-        redirect(`${currentEditPath}?error=${encodeURIComponent(message)}`);
+        redirect(`${EDIT_PATH}?error=${encodeURIComponent(message)}`);
       }
 
       let updatedArtist;
@@ -109,21 +102,18 @@ export async function ProfileForm({
             ? error.message
             : "Unable to save profile.";
 
-        redirect(`${currentEditPath}?error=${encodeURIComponent(message)}`);
+        redirect(`${EDIT_PATH}?error=${encodeURIComponent(message)}`);
       }
 
       revalidatePath(`/artist/${updatedArtist.slug}`);
-      revalidatePath(`/artist/${updatedArtist.slug}/edit`);
+      revalidatePath(EDIT_PATH);
 
       if (artist?.slug && artist.slug !== updatedArtist.slug) {
         revalidatePath(`/artist/${artist.slug}`);
-        revalidatePath(`/artist/${artist.slug}/edit`);
       }
 
       redirect(
-        `${getEditPath(updatedArtist.slug)}?success=${encodeURIComponent(
-          "Profile updated.",
-        )}`,
+        `${EDIT_PATH}?success=${encodeURIComponent("Profile updated.")}`,
       );
     }
 
@@ -132,7 +122,7 @@ export async function ProfileForm({
     if (!result.success) {
       const message =
         result.error.issues[0]?.message ?? "Invalid profile data.";
-      redirect(`${getCreatePath()}?error=${encodeURIComponent(message)}`);
+      redirect(`${EDIT_PATH}?error=${encodeURIComponent(message)}`);
     }
 
     let createdArtist;
@@ -145,17 +135,13 @@ export async function ProfileForm({
           ? error.message
           : "Unable to save profile.";
 
-      redirect(`${getCreatePath()}?error=${encodeURIComponent(message)}`);
+      redirect(`${EDIT_PATH}?error=${encodeURIComponent(message)}`);
     }
 
     revalidatePath(`/artist/${createdArtist.slug}`);
-    revalidatePath(`/artist/${createdArtist.slug}/edit`);
+    revalidatePath(EDIT_PATH);
 
-    redirect(
-      `${getEditPath(createdArtist.slug)}?success=${encodeURIComponent(
-        "Profile created.",
-      )}`,
-    );
+    redirect(`${EDIT_PATH}?success=${encodeURIComponent("Profile created.")}`);
   }
 
   return (

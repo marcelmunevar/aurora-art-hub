@@ -13,7 +13,7 @@ import { getCurrentUserArtist } from "@/lib/queries/artist";
 
 import { ProfileForm } from "./_components/ProfileForm";
 
-type ArtistCreatePageProps = {
+type ArtistEditPageProps = {
   searchParams?: Promise<{
     error?: string;
     success?: string;
@@ -78,15 +78,13 @@ function ProfileFormFallback() {
   );
 }
 
-function ArtistCreatePageFallback() {
+function ArtistEditPageFallback() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-10">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Create profile
-        </h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Edit profile</h1>
         <p className="text-sm text-muted-foreground">
-          Create the artist profile attached to your account.
+          Create or update the artist profile attached to your account.
         </p>
       </div>
       <ProfileFormFallback />
@@ -94,29 +92,29 @@ function ArtistCreatePageFallback() {
   );
 }
 
-async function ArtistCreatePageContent({
-  searchParams,
-}: ArtistCreatePageProps) {
+async function ArtistEditPageContent({ searchParams }: ArtistEditPageProps) {
+  let artist = null;
   try {
-    const artist = await getCurrentUserArtist();
-
-    if (artist?.slug) {
-      redirect(`/artist/${artist.slug}/edit`);
-    }
+    artist = await getCurrentUserArtist();
   } catch (error) {
-    if (!(error instanceof QueryError) || error.code !== "UNAUTHORIZED") {
-      throw error;
+    if (error instanceof QueryError && error.code === "UNAUTHORIZED") {
+      redirect("/auth/login");
     }
+    throw error;
   }
+
+  const isCreate = !artist;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-10">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">
-          Create profile
+          {isCreate ? "Create profile" : "Edit profile"}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Create the artist profile attached to your account.
+          {isCreate
+            ? "Create the artist profile attached to your account."
+            : "Update the artist profile attached to your account."}
         </p>
       </div>
       <ProfileForm searchParams={searchParams} />
@@ -124,10 +122,10 @@ async function ArtistCreatePageContent({
   );
 }
 
-export default function Page({ searchParams }: ArtistCreatePageProps) {
+export default function Page({ searchParams }: ArtistEditPageProps) {
   return (
-    <Suspense fallback={<ArtistCreatePageFallback />}>
-      <ArtistCreatePageContent searchParams={searchParams} />
+    <Suspense fallback={<ArtistEditPageFallback />}>
+      <ArtistEditPageContent searchParams={searchParams} />
     </Suspense>
   );
 }
