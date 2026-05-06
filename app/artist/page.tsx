@@ -211,7 +211,7 @@ async function AuthenticatedHeroAction() {
       size="lg"
       className="rounded-full px-6 sm:w-auto"
     >
-      <Link href="/profile">Manage your profile</Link>
+      <Link href="/profile/edit">Manage your profile</Link>
     </Button>
   );
 }
