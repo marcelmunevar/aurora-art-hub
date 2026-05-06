@@ -80,38 +80,27 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
         </div>
       )}
 
-      {art.instagram_url || art.etsy_url ? (
-        <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
-          {art.instagram_url ? (
-            <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                Instagram
-              </p>
-              <LinkPreview url={art.instagram_url} className="max-w-none" />
-            </div>
-          ) : null}
+      {art.instagram_url ? (
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Instagram
+          </p>
+          <LinkPreview url={art.instagram_url} />
+        </div>
+      ) : null}
 
-          {art.etsy_url ? (
-            <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                Etsy
-              </p>
-              <Button
-                asChild
-                className="w-full rounded-full bg-orange-600 text-white hover:bg-orange-700 sm:w-auto"
-              >
-                <a
-                  href={art.etsy_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  Buy on Etsy
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </Button>
-            </div>
-          ) : null}
+      {art.etsy_url ? (
+        <div className="space-y-2">
+          <Button
+            asChild
+            className="w-full rounded-full bg-orange-600 text-white hover:bg-orange-700 sm:w-auto"
+          >
+            <a href={art.etsy_url} target="_blank" rel="noopener noreferrer">
+              <Sparkles className="h-4 w-4" />
+              Buy on Etsy
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </Button>
         </div>
       ) : null}
     </section>
