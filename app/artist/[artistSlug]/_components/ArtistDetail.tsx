@@ -21,6 +21,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { HeroBubble } from "@/components/hero-bubble";
+import { StatCard } from "@/components/stat-card";
 import { ArtworkCard, ArtworkEmptyState } from "@/app/art/_components/ArtList";
 import { getArtsByArtistId } from "@/lib/queries/art";
 import { getArtistBySlug, getCurrentUserArtist } from "@/lib/queries/artist";
@@ -102,13 +103,13 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
         layoutClassName="gap-8"
         aside={
           <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
-            <ArtistStatCard
+            <StatCard
               label="Profile status"
               value={artist.is_public ? "Public" : "Private"}
               description="Visibility setting for this artist profile."
               icon={<UserRound className="h-4 w-4" />}
             />
-            <ArtistStatCard
+            <StatCard
               label="Artwork"
               value={String(visibleArtworks.length)}
               description={
@@ -118,7 +119,7 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
               }
               icon={<Plus className="h-4 w-4" />}
             />
-            <ArtistStatCard
+            <StatCard
               label="Links"
               value={String(
                 [
@@ -274,35 +275,6 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
         </div>
       ) : null}
     </section>
-  );
-}
-
-function ArtistStatCard({
-  label,
-  value,
-  description,
-  icon,
-  className,
-}: {
-  label: string;
-  value: string;
-  description: string;
-  icon: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`min-h-40 rounded-3xl border border-border/60 bg-background/80 p-4 backdrop-blur ${className ?? ""}`}
-    >
-      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-        {icon}
-        <span>{label}</span>
-      </div>
-      <p className="mt-4 text-2xl font-semibold leading-tight">{value}</p>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        {description}
-      </p>
-    </div>
   );
 }
 

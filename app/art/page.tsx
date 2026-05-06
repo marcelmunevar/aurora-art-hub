@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Eye, EyeOff, Sparkles, UserRound } from "lucide-react";
 
 import { HeroBubble } from "@/components/hero-bubble";
+import { StatCard } from "@/components/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -112,13 +113,13 @@ async function HeroStats() {
 
   return (
     <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
-      <HeroStatCard
+      <StatCard
         label="Public gallery"
         value={String(publicArt.length)}
         description="Published pieces available for discovery across Aurora."
         icon={<Eye className="h-4 w-4" />}
       />
-      <HeroStatCard
+      <StatCard
         label="Artist profile"
         value={artist ? artist.name : "Guest view"}
         description={
@@ -130,7 +131,7 @@ async function HeroStats() {
         }
         icon={<UserRound className="h-4 w-4" />}
       />
-      <HeroStatCard
+      <StatCard
         label="Private collection"
         value={String(privateCount)}
         description={
@@ -161,35 +162,6 @@ function HeroStatsFallback() {
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-function HeroStatCard({
-  label,
-  value,
-  description,
-  icon,
-  className,
-}: {
-  label: string;
-  value: string;
-  description: string;
-  icon: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`min-h-40 rounded-3xl border border-border/60 bg-background/80 p-4 backdrop-blur ${className ?? ""}`}
-    >
-      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-        {icon}
-        <span>{label}</span>
-      </div>
-      <p className="mt-4 text-2xl font-semibold leading-tight">{value}</p>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        {description}
-      </p>
     </div>
   );
 }

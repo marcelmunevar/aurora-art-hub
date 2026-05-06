@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { HeroBubble } from "@/components/hero-bubble";
+import { StatCard } from "@/components/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,7 +90,7 @@ async function DashboardContent() {
         }
         aside={
           <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
-            <DashboardStatCard
+            <StatCard
               label="Artist profile"
               value={artist ? artist.name : "Missing"}
               description={
@@ -101,13 +102,13 @@ async function DashboardContent() {
               }
               icon={<UserRound className="h-4 w-4" />}
             />
-            <DashboardStatCard
+            <StatCard
               label="Total pieces"
               value={String(artworks.length)}
               description="Artwork attached to your account"
               icon={<Palette className="h-4 w-4" />}
             />
-            <DashboardStatCard
+            <StatCard
               label="Visibility split"
               value={`${publicCount}/${privateCount}`}
               description="Public / private pieces"
@@ -179,30 +180,5 @@ function DashboardFallback() {
         </Card>
       </div>
     </section>
-  );
-}
-
-function DashboardStatCard({
-  label,
-  value,
-  description,
-  icon,
-}: {
-  label: string;
-  value: string;
-  description: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <div className="min-h-40 rounded-3xl border border-border/60 bg-background/80 p-4 backdrop-blur">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-        {icon}
-        <span>{label}</span>
-      </div>
-      <p className="mt-4 text-2xl font-semibold leading-tight">{value}</p>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        {description}
-      </p>
-    </div>
   );
 }
