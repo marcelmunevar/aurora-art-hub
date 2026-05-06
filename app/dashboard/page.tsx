@@ -11,45 +11,20 @@ import {
 } from "lucide-react";
 
 import { HeroBubble } from "@/components/hero-bubble";
+import { StatCardFallbackGrid } from "@/components/stat-card-fallback-grid";
 import { StatCard } from "@/components/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { getCurrentUserArt } from "@/lib/queries/art";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 import { createClient } from "@/lib/supabase/server";
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<DashboardFallback />}>
-      <DashboardContent />
-    </Suspense>
-  );
-}
-
-async function DashboardContent() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
-
-  const artist = await getCurrentUserArtist();
-  const artworks = artist ? await getCurrentUserArt() : [];
-  const publicCount = artworks.filter((art) => art.is_public).length;
-  const privateCount = artworks.length - publicCount;
-  const userEmail =
-    typeof data.claims.email === "string" ? data.claims.email : null;
-
-  return (
     <section className="flex flex-col gap-10 pb-6">
+      <Suspense fallback={null}>
+        <RequireAuthenticatedUser />
+      </Suspense>
       <HeroBubble
         badge={
           <Badge className="w-fit rounded-full border-transparent bg-foreground text-background">
@@ -60,126 +35,133 @@ async function DashboardContent() {
         eyebrow="Studio overview"
         title="Keep your profile, artwork, and visibility controls in one place."
         description={
-          userEmail
-            ? `Signed in as ${userEmail}. Review your artist profile, track public versus private pieces, and jump back into editing.`
-            : "Review your artist profile, track public versus private pieces, and jump back into editing."
+          <>
+            <Suspense fallback={null}>
+              <AuthenticatedUserEmailPrefix />
+            </Suspense>
+            Review your artist profile, track public versus private pieces, and
+            jump back into editing.
+          </>
         }
         contentClassName="space-y-5"
         textClassName="space-y-3"
         layoutClassName="gap-8"
         actions={
           <>
-            <Button asChild size="lg" className="rounded-full px-6 sm:w-auto">
-              <Link href={artist ? `/artist/${artist.slug}` : "/artist/edit"}>
-                {artist ? "View profile" : "Create profile"}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="rounded-full px-6 sm:w-auto"
-            >
-              <Link href={artist ? "/art/add" : "/art"}>
-                {artist ? "Add artwork" : "Browse gallery"}
-                <Plus className="h-4 w-4" />
-              </Link>
-            </Button>
+            <Suspense fallback={null}>
+              <AuthenticatedHeroAction />
+            </Suspense>
+            <Suspense fallback={null}>
+              <GalleryHeroAction />
+            </Suspense>
           </>
         }
         aside={
-          <div className="grid gap-3 md:grid-cols-2">
-            <StatCard
-              label="Artist profile"
-              value={artist ? artist.name : "Missing"}
-              description={
-                artist
-                  ? artist.is_public
-                    ? "Public and discoverable"
-                    : "Saved privately"
-                  : "Set up your studio identity"
-              }
-              icon={<UserRound className="h-4 w-4" />}
-            />
-            <StatCard
-              label="Total pieces"
-              value={String(artworks.length)}
-              description="Artwork attached to your account"
-              icon={<Palette className="h-4 w-4" />}
-            />
-            <StatCard
-              label="Visibility split"
-              value={`${publicCount}/${privateCount}`}
-              description="Public / private pieces"
-              icon={<Shield className="h-4 w-4" />}
-              className="md:col-span-2"
-            />
-          </div>
+          <Suspense fallback={<StatCardFallbackGrid />}>
+            <DashboardStats />
+          </Suspense>
         }
       />
     </section>
   );
 }
 
-function DashboardFallback() {
+async function DashboardStats() {
+  const artist = await getCurrentUserArtist();
+  const artworks = artist ? await getCurrentUserArt() : [];
+  const publicCount = artworks.filter((art) => art.is_public).length;
+  const privateCount = artworks.length - publicCount;
+
   return (
-    <section className="flex flex-col gap-10 pb-6">
-      <div className="rounded-[2rem] border border-border/60 bg-muted/20 p-8 shadow-sm sm:p-10">
-        <div className="space-y-4 animate-pulse">
-          <div className="h-6 w-28 rounded-full bg-muted" />
-          <div className="h-4 w-32 rounded bg-muted" />
-          <div className="h-12 max-w-2xl rounded bg-muted" />
-          <div className="h-6 max-w-3xl rounded bg-muted" />
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="h-11 w-full rounded-full bg-muted sm:w-40" />
-            <div className="h-11 w-full rounded-full bg-muted sm:w-40" />
-          </div>
-        </div>
-      </div>
+    <div className="grid gap-3 md:grid-cols-2">
+      <StatCard
+        label="Artist profile"
+        value={artist ? artist.name : "Missing"}
+        description={
+          artist
+            ? artist.is_public
+              ? "Public and discoverable"
+              : "Saved privately"
+            : "Set up your studio identity"
+        }
+        icon={<UserRound className="h-4 w-4" />}
+      />
+      <StatCard
+        label="Total pieces"
+        value={String(artworks.length)}
+        description="Artwork attached to your account"
+        icon={<Palette className="h-4 w-4" />}
+      />
+      <StatCard
+        label="Visibility split"
+        value={`${publicCount}/${privateCount}`}
+        description="Public / private pieces"
+        icon={<Shield className="h-4 w-4" />}
+        className="md:col-span-2"
+      />
+    </div>
+  );
+}
 
-      <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
-        <Card className="rounded-[1.75rem] border-border/60">
-          <CardHeader>
-            <div className="h-6 w-40 animate-pulse rounded bg-muted" />
-            <div className="h-4 w-72 animate-pulse rounded bg-muted" />
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div
-                key={index}
-                className="rounded-[1.25rem] border border-border/60 bg-background/70 p-4"
-              >
-                <div className="space-y-3 animate-pulse">
-                  <div className="h-4 w-24 rounded bg-muted" />
-                  <div className="h-8 w-28 rounded bg-muted" />
-                  <div className="h-4 w-full rounded bg-muted" />
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+async function RequireAuthenticatedUser() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getClaims();
 
-        <Card className="rounded-[1.75rem] border-border/60">
-          <CardHeader>
-            <div className="h-6 w-32 animate-pulse rounded bg-muted" />
-            <div className="h-4 w-64 animate-pulse rounded bg-muted" />
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className="rounded-[1.25rem] border border-border/60 bg-background/70 p-4"
-              >
-                <div className="space-y-3 animate-pulse">
-                  <div className="h-4 w-40 rounded bg-muted" />
-                  <div className="h-4 w-full rounded bg-muted" />
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-    </section>
+  if (error || !data?.claims) {
+    redirect("/auth/login");
+  }
+
+  return null;
+}
+
+async function AuthenticatedUserEmailPrefix() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getClaims();
+
+  if (error || !data?.claims) {
+    redirect("/auth/login");
+  }
+
+  const userEmail =
+    typeof data.claims.email === "string" ? data.claims.email : null;
+
+  if (!userEmail) return null;
+
+  return <>Signed in as {userEmail}. </>;
+}
+
+async function GalleryHeroAction() {
+  const artist = await getCurrentUserArtist();
+
+  return (
+    <Button
+      asChild
+      size="lg"
+      variant="outline"
+      className="rounded-full px-6 sm:w-auto"
+    >
+      <Link href={artist ? "/art/add" : "/art"}>
+        {artist ? "Add artwork" : "Browse gallery"}
+        <Plus className="h-4 w-4" />
+      </Link>
+    </Button>
+  );
+}
+
+async function AuthenticatedHeroAction() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+
+  if (!data?.claims) return null;
+
+  const artist = await getCurrentUserArtist();
+
+  return (
+    <Button asChild size="lg" className="rounded-full px-6 sm:w-auto">
+      <Link href={artist ? `/artist/${artist.slug}` : "/artist/edit"}>
+        {artist ? "View profile" : "Create profile"}
+        <ArrowRight className="h-4 w-4" />
+      </Link>
+    </Button>
   );
 }

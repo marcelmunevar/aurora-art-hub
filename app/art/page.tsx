@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Eye, EyeOff, Sparkles, UserRound } from "lucide-react";
 
 import { HeroBubble } from "@/components/hero-bubble";
+import { StatCardFallbackGrid } from "@/components/stat-card-fallback-grid";
 import { StatCard } from "@/components/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -147,23 +148,7 @@ async function HeroStats() {
 }
 
 function HeroStatsFallback() {
-  return (
-    <div className="grid gap-3 md:grid-cols-2">
-      {Array.from({ length: 3 }).map((_, index) => (
-        <div
-          key={index}
-          className="min-h-40 rounded-3xl border border-border/60 bg-background/80 p-4 backdrop-blur"
-        >
-          <div className="space-y-3 animate-pulse">
-            <div className="h-4 w-24 rounded bg-muted" />
-            <div className="h-8 w-28 rounded bg-muted" />
-            <div className="h-4 w-full rounded bg-muted" />
-            <div className="h-4 w-5/6 rounded bg-muted" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  return <StatCardFallbackGrid />;
 }
 
 async function AuthenticatedHeroAction() {
