@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, Pencil } from "lucide-react";
+import { ExternalLink, Pencil, Sparkles } from "lucide-react";
 
 import { getArtBySlug } from "@/lib/queries/art";
 import { getArtistById, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { EtsyPreview, LinkPreview } from "@/components/link-previews";
+import { LinkPreview } from "@/components/link-previews/link-preview";
 
 export async function ArtDetail({ artSlug }: { artSlug: string }) {
   const art = await getArtBySlug(artSlug);
@@ -96,7 +96,20 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
               <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                 Etsy
               </p>
-              <EtsyPreview url={art.etsy_url} />
+              <Button
+                asChild
+                className="w-full rounded-full bg-orange-600 text-white hover:bg-orange-700 sm:w-auto"
+              >
+                <a
+                  href={art.etsy_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Buy on Etsy
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
             </div>
           ) : null}
         </div>
