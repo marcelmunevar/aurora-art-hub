@@ -65,7 +65,7 @@ export default function Page() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Suspense fallback={null}>
+            <Suspense fallback={<HeroActionFallback />}>
               <AuthenticatedHeroAction />
             </Suspense>
           </>
@@ -149,6 +149,10 @@ async function HeroStats() {
 
 function HeroStatsFallback() {
   return <StatCardFallbackGrid />;
+}
+
+function HeroActionFallback() {
+  return <div className="h-11 w-48 animate-pulse rounded-full bg-muted/70" />;
 }
 
 async function AuthenticatedHeroAction() {

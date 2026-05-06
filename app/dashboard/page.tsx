@@ -48,10 +48,10 @@ export default function DashboardPage() {
         layoutClassName="gap-8"
         actions={
           <>
-            <Suspense fallback={null}>
+            <Suspense fallback={<HeroActionFallback />}>
               <AuthenticatedHeroAction />
             </Suspense>
-            <Suspense fallback={null}>
+            <Suspense fallback={<HeroActionFallback />}>
               <GalleryHeroAction />
             </Suspense>
           </>
@@ -64,6 +64,10 @@ export default function DashboardPage() {
       />
     </section>
   );
+}
+
+function HeroActionFallback() {
+  return <div className="h-11 w-48 animate-pulse rounded-full bg-muted/70" />;
 }
 
 async function DashboardStats() {

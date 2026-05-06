@@ -10,11 +10,16 @@ export function StatCardFallbackGrid({
   className,
 }: StatCardFallbackGridProps) {
   return (
-    <div className={cn("grid gap-3 md:grid-cols-2", className)}>
+    <div
+      className={cn("grid gap-3 md:min-w-[28rem] md:grid-cols-2", className)}
+    >
       {Array.from({ length: count }).map((_, index) => (
         <div
           key={index}
-          className="min-h-40 rounded-3xl border border-border/60 bg-background/80 p-4 backdrop-blur"
+          className={cn(
+            "min-h-40 rounded-3xl border border-border/60 bg-background/80 p-4 backdrop-blur",
+            index === 2 ? "md:col-span-2" : undefined,
+          )}
         >
           <div className="space-y-3 animate-pulse">
             <div className="h-4 w-24 rounded bg-muted" />
