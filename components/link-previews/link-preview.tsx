@@ -1,4 +1,5 @@
 import { ExternalLink } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const FB_UA =
   "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)";
@@ -87,7 +88,13 @@ async function fetchImageDataUrl(src: string): Promise<string | null> {
   }
 }
 
-export async function LinkPreview({ url }: { url: string | null }) {
+export async function LinkPreview({
+  url,
+  className,
+}: {
+  url: string | null;
+  className?: string;
+}) {
   if (!url) return null;
 
   const [og, hostname] = await Promise.all([
@@ -102,7 +109,10 @@ export async function LinkPreview({ url }: { url: string | null }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex w-full max-w-sm flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"
+      className={cn(
+        "group flex w-full max-w-sm flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md",
+        className,
+      )}
     >
       {imageDataUrl ? (
         <div className="aspect-square w-full overflow-hidden bg-muted">

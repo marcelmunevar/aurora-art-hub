@@ -35,7 +35,7 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
   if (!art.is_public && !isOwner) notFound();
 
   return (
-    <section className="flex flex-col gap-8">
+    <section className="w-full flex flex-col gap-8">
       <div className="space-y-3">
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Artwork
@@ -64,7 +64,7 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
       </div>
 
       {art.description && (
-        <p className="max-w-2xl whitespace-pre-wrap text-base leading-7 text-muted-foreground">
+        <p className="max-w-4xl whitespace-pre-wrap text-base leading-7 text-muted-foreground">
           {art.description}
         </p>
       )}
@@ -80,23 +80,27 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
         </div>
       )}
 
-      {art.instagram_url && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Instagram
-          </p>
-          <LinkPreview url={art.instagram_url} />
-        </div>
-      )}
+      {art.instagram_url || art.etsy_url ? (
+        <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
+          {art.instagram_url ? (
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                Instagram
+              </p>
+              <LinkPreview url={art.instagram_url} className="max-w-none" />
+            </div>
+          ) : null}
 
-      {art.etsy_url && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Etsy
-          </p>
-          <EtsyPreview url={art.etsy_url} />
+          {art.etsy_url ? (
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                Etsy
+              </p>
+              <EtsyPreview url={art.etsy_url} />
+            </div>
+          ) : null}
         </div>
-      )}
+      ) : null}
     </section>
   );
 }
