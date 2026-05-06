@@ -89,7 +89,7 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
             {isOwner ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button asChild variant="outline" size="sm">
-                  <Link href="/profile">
+                  <Link href={`/artist/${artist.slug}/edit`}>
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit profile
                   </Link>

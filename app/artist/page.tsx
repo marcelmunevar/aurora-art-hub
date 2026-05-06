@@ -204,6 +204,8 @@ async function AuthenticatedHeroAction() {
 
   if (!data?.claims) return null;
 
+  const currentArtist = await getCurrentUserArtist();
+
   return (
     <Button
       asChild
@@ -211,7 +213,11 @@ async function AuthenticatedHeroAction() {
       size="lg"
       className="rounded-full px-6 sm:w-auto"
     >
-      <Link href="/profile/edit">Manage your profile</Link>
+      <Link
+        href={currentArtist ? `/artist/${currentArtist.slug}` : "/artist/edit"}
+      >
+        {currentArtist ? "View your profile" : "Create your profile"}
+      </Link>
     </Button>
   );
 }

@@ -68,7 +68,7 @@ export async function ArtForm(props: ArtFormProps) {
 
   if (!artist) {
     redirect(
-      `/profile?error=${encodeURIComponent(
+      `/artist/edit?error=${encodeURIComponent(
         `You must create an artist profile before ${
           mode === "create" ? "adding" : "editing"
         } art.`,

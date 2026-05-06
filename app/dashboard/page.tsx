@@ -72,7 +72,9 @@ async function DashboardContent() {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="rounded-full px-6 sm:w-auto">
-                <Link href="/profile">
+                <Link
+                  href={artist ? `/artist/${artist.slug}` : "/artist/edit"}
+                >
                   {artist ? "View profile" : "Create profile"}
                   <ArrowRight className="h-4 w-4" />
                 </Link>

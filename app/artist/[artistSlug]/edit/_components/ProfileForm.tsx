@@ -17,15 +17,28 @@ import {
   getCurrentUserArtist,
   updateArtist,
 } from "@/lib/queries/artist";
+import type { Artist } from "@/types/artist";
 import {
   safeValidateCreateArtistInput,
   safeValidateUpdateArtistInput,
 } from "@/lib/validation/artist";
 
 type ProfileFormProps = {
+  searchParams?: Promise<{
+    error?: string;
+    success?: string;
+  }>;
   errorMessage?: string | null;
   successMessage?: string | null;
 };
+
+function getCreatePath(): string {
+  return "/artist/edit";
+}
+
+function getEditPath(slug: string | null | undefined): string {
+  return slug ? `/artist/${slug}/edit` : getCreatePath();
+}
 
 function getStringValue(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
@@ -47,10 +60,17 @@ function getArtistInput(formData: FormData) {
 }
 
 export async function ProfileForm({
+  searchParams,
   errorMessage,
   successMessage,
 }: ProfileFormProps) {
-  let artist;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const resolvedErrorMessage =
+    errorMessage ?? resolvedSearchParams.error ?? null;
+  const resolvedSuccessMessage =
+    successMessage ?? resolvedSearchParams.success ?? null;
+
+  let artist: Artist | null;
 
   try {
     artist = await getCurrentUserArtist();
@@ -63,47 +83,77 @@ export async function ProfileForm({
   }
 
   const artistId = artist?.id ?? null;
+  const currentEditPath = getEditPath(artist?.slug);
 
   async function submitProfile(formData: FormData) {
     "use server";
 
     const input = getArtistInput(formData);
 
-    try {
-      if (artistId) {
-        const result = safeValidateUpdateArtistInput(input);
+    if (artistId) {
+      const result = safeValidateUpdateArtistInput(input);
 
-        if (!result.success) {
-          const message =
-            result.error.issues[0]?.message ?? "Invalid profile data.";
-          redirect(`/profile?error=${encodeURIComponent(message)}`);
-        }
-
-        await updateArtist(artistId, result.data);
-      } else {
-        const result = safeValidateCreateArtistInput(input);
-
-        if (!result.success) {
-          const message =
-            result.error.issues[0]?.message ?? "Invalid profile data.";
-          redirect(`/profile?error=${encodeURIComponent(message)}`);
-        }
-
-        await createArtist(result.data);
+      if (!result.success) {
+        const message =
+          result.error.issues[0]?.message ?? "Invalid profile data.";
+        redirect(`${currentEditPath}?error=${encodeURIComponent(message)}`);
       }
+
+      let updatedArtist;
+
+      try {
+        updatedArtist = await updateArtist(artistId, result.data);
+      } catch (error) {
+        const message =
+          error instanceof QueryError || error instanceof Error
+            ? error.message
+            : "Unable to save profile.";
+
+        redirect(`${currentEditPath}?error=${encodeURIComponent(message)}`);
+      }
+
+      revalidatePath(`/artist/${updatedArtist.slug}`);
+      revalidatePath(`/artist/${updatedArtist.slug}/edit`);
+
+      if (artist?.slug && artist.slug !== updatedArtist.slug) {
+        revalidatePath(`/artist/${artist.slug}`);
+        revalidatePath(`/artist/${artist.slug}/edit`);
+      }
+
+      redirect(
+        `${getEditPath(updatedArtist.slug)}?success=${encodeURIComponent(
+          "Profile updated.",
+        )}`,
+      );
+    }
+
+    const result = safeValidateCreateArtistInput(input);
+
+    if (!result.success) {
+      const message =
+        result.error.issues[0]?.message ?? "Invalid profile data.";
+      redirect(`${getCreatePath()}?error=${encodeURIComponent(message)}`);
+    }
+
+    let createdArtist;
+
+    try {
+      createdArtist = await createArtist(result.data);
     } catch (error) {
       const message =
         error instanceof QueryError || error instanceof Error
           ? error.message
           : "Unable to save profile.";
 
-      redirect(`/profile?error=${encodeURIComponent(message)}`);
+      redirect(`${getCreatePath()}?error=${encodeURIComponent(message)}`);
     }
 
-    revalidatePath("/profile");
+    revalidatePath(`/artist/${createdArtist.slug}`);
+    revalidatePath(`/artist/${createdArtist.slug}/edit`);
+
     redirect(
-      `/profile?success=${encodeURIComponent(
-        artistId ? "Profile updated." : "Profile created.",
+      `${getEditPath(createdArtist.slug)}?success=${encodeURIComponent(
+        "Profile created.",
       )}`,
     );
   }
@@ -120,15 +170,15 @@ export async function ProfileForm({
       </CardHeader>
       <CardContent>
         <form action={submitProfile} className="space-y-6">
-          {errorMessage ? (
+          {resolvedErrorMessage ? (
             <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              {errorMessage}
+              {resolvedErrorMessage}
             </div>
           ) : null}
 
-          {successMessage ? (
+          {resolvedSuccessMessage ? (
             <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700">
-              {successMessage}
+              {resolvedSuccessMessage}
             </div>
           ) : null}
 

@@ -1,0 +1,1 @@
+export { ProfileForm } from "@/app/artist/[artistSlug]/edit/_components/ProfileForm";
