@@ -34,15 +34,26 @@ type ProfileFormProps = {
 
 const EDIT_PATH = "/artist/edit";
 
+function nameToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function getStringValue(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
   return typeof value === "string" ? value : undefined;
 }
 
 function getArtistInput(formData: FormData) {
+  const name = getStringValue(formData, "name");
   return {
-    slug: getStringValue(formData, "slug"),
-    name: getStringValue(formData, "name"),
+    slug: name ? nameToSlug(name) : undefined,
+    name,
     bio: getStringValue(formData, "bio"),
     avatar_url: getStringValue(formData, "avatar_url"),
     etsy_link: getStringValue(formData, "etsy_link"),
@@ -169,28 +180,15 @@ export async function ProfileForm({
             </div>
           ) : null}
 
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input
-                id="slug"
-                name="slug"
-                placeholder="marcel-studio"
-                defaultValue={artist?.slug ?? ""}
-                required
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="Marcel Studio"
-                defaultValue={artist?.name ?? ""}
-                required
-              />
-            </div>
+          <div className="grid gap-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              name="name"
+              placeholder="Marcel Studio"
+              defaultValue={artist?.name ?? ""}
+              required
+            />
           </div>
 
           <div className="grid gap-2">
