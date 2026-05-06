@@ -1,12 +1,13 @@
-import { Suspense } from "react";
 import Link from "next/link";
 import {
+  ArrowRight,
   ArrowUpRight,
   ExternalLink,
   Eye,
   EyeOff,
-  ImageIcon,
+  Instagram,
   Pencil,
+  Store,
   Sparkles,
 } from "lucide-react";
 
@@ -23,8 +24,6 @@ import {
 import { getPublicArt, getPrivateArt } from "@/lib/queries/art";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
-import { EtsyPreview, LinkPreview } from "@/components/link-previews";
-import type { PublicArt } from "@/types/art";
 
 const CARD_ACCENTS = [
   "from-amber-200/70 via-orange-100/40 to-transparent dark:from-amber-500/20 dark:via-orange-400/10 dark:to-transparent",
@@ -121,30 +120,53 @@ export async function ArtworkCard({
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 space-y-4 text-sm text-muted-foreground">
-        {art.instagram_url ? (
-          <Suspense
-            fallback={
-              <div className="aspect-square w-full max-w-sm animate-pulse rounded-[1.25rem] bg-muted" />
-            }
-          >
-            <div className="overflow-hidden rounded-[1.25rem] border border-border/60 bg-background">
-              <div className="flex items-center gap-2 border-b border-border/60 px-4 py-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                <ImageIcon className="h-3.5 w-3.5" />
-                Instagram preview
-              </div>
-              <div className="p-3">
-                <LinkPreview url={art.instagram_url} />
-              </div>
-            </div>
-          </Suspense>
+        {art.instagram_url || art.etsy_url ? (
+          <div className="space-y-2">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              Links
+            </p>
+            <ul className="space-y-1.5">
+              {art.instagram_url ? (
+                <li>
+                  <a
+                    href={art.instagram_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Open Instagram link"
+                    title="Instagram"
+                    className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:text-foreground"
+                  >
+                    <Instagram className="h-4 w-4" />
+                    <span>Instagram</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </li>
+              ) : null}
+              {art.etsy_url ? (
+                <li>
+                  <a
+                    href={art.etsy_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Open Etsy link"
+                    title="Etsy"
+                    className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:text-foreground"
+                  >
+                    <Store className="h-4 w-4" />
+                    <span>Etsy</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </li>
+              ) : null}
+            </ul>
+          </div>
         ) : null}
-        {art.etsy_url ? <EtsyPreview url={art.etsy_url} compact /> : null}
       </CardContent>
       <CardFooter className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
         <Button asChild className="w-full min-w-0 rounded-full md:flex-1">
           <Link href={`/art/${art.slug}`}>
             View artwork
-            <ExternalLink className="h-4 w-4" />
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </Button>
         {isOwner ? (
