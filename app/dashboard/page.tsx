@@ -89,7 +89,7 @@ async function DashboardContent() {
           </>
         }
         aside={
-          <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-2">
             <StatCard
               label="Artist profile"
               value={artist ? artist.name : "Missing"}
@@ -113,6 +113,7 @@ async function DashboardContent() {
               value={`${publicCount}/${privateCount}`}
               description="Public / private pieces"
               icon={<Shield className="h-4 w-4" />}
+              className="md:col-span-2"
             />
           </div>
         }

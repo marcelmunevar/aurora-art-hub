@@ -112,7 +112,7 @@ async function HeroStats() {
   ).length;
 
   return (
-    <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
+    <div className="grid gap-3 md:grid-cols-2">
       <StatCard
         label="Public artists"
         value={String(publicArtists.length)}
@@ -136,7 +136,7 @@ async function HeroStats() {
         value={String(withLocationCount)}
         description="Public artists currently sharing a visible location."
         icon={<MapPin className="h-4 w-4" />}
-        className="md:col-span-2 xl:col-span-1"
+        className="md:col-span-2"
       />
     </div>
   );
@@ -144,7 +144,7 @@ async function HeroStats() {
 
 function HeroStatsFallback() {
   return (
-    <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
+    <div className="grid gap-3 md:grid-cols-2">
       {Array.from({ length: 3 }).map((_, index) => (
         <div
           key={index}

@@ -102,7 +102,7 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
         }
         layoutClassName="gap-8"
         aside={
-          <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-2">
             <StatCard
               label="Profile status"
               value={artist.is_public ? "Public" : "Private"}
@@ -131,7 +131,7 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
               )}
               description="External links available from this profile."
               icon={<ExternalLink className="h-4 w-4" />}
-              className="md:col-span-2 xl:col-span-1"
+              className="md:col-span-2"
             />
           </div>
         }
