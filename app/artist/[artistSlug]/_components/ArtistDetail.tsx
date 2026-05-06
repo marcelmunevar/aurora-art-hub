@@ -24,15 +24,6 @@ import { getArtsByArtistId } from "@/lib/queries/art";
 import { getArtistBySlug, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 
-function getArtistInitials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
   const artist = await getArtistBySlug(artistSlug);
 
@@ -59,7 +50,6 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
   const visibleArtworks = isOwner
     ? artworks
     : artworks.filter((art) => art.is_public);
-  const initials = getArtistInitials(artist.name);
 
   return (
     <section className="flex flex-col gap-8">
@@ -72,10 +62,6 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
             </p>
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-3">
-                <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.35rem] border border-background/80 bg-background/90 text-lg font-semibold text-foreground shadow-sm">
-                  <div className="absolute inset-0 rounded-[1.35rem] bg-[radial-gradient(circle_at_top,_hsl(var(--foreground)/0.06),_transparent_70%)]" />
-                  <span className="relative">{initials}</span>
-                </div>
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-3">
                     <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">

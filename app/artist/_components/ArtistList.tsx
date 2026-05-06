@@ -20,15 +20,6 @@ const CARD_ACCENTS = [
   "from-rose-200/70 via-pink-100/40 to-transparent dark:from-rose-500/20 dark:via-pink-400/10 dark:to-transparent",
 ];
 
-function getArtistInitials(name: string): string {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 export async function ArtistList() {
   const artists = await getPublicArtists();
 
@@ -48,7 +39,6 @@ export async function ArtistList() {
   return (
     <div className="grid gap-5 min-[520px]:grid-cols-2 min-[1080px]:grid-cols-3">
       {artists.map((artist) => {
-        const initials = getArtistInitials(artist.name);
         const accentClass = CARD_ACCENTS[artist.id % CARD_ACCENTS.length];
 
         return (
@@ -59,10 +49,6 @@ export async function ArtistList() {
             <CardHeader className="relative gap-5 px-0 pb-4 pt-0">
               <div className={`bg-gradient-to-br ${accentClass} px-6 py-6`}>
                 <div className="flex items-start gap-4">
-                  <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.35rem] border border-background/80 bg-background/90 text-lg font-semibold text-foreground shadow-sm">
-                    <div className="absolute inset-0 rounded-[1.35rem] bg-[radial-gradient(circle_at_top,_hsl(var(--foreground)/0.06),_transparent_70%)]" />
-                    <span className="relative">{initials}</span>
-                  </div>
                   <div className="min-w-0 space-y-3">
                     <div className="space-y-2">
                       <CardTitle className="text-xl leading-tight">
