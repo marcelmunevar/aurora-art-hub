@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { ExternalLink, Pencil } from "lucide-react";
 
 import { getArtBySlug } from "@/lib/queries/art";
 import { getArtistById, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { LinkPreview } from "@/components/link-preview";
+import { EtsyPreview, LinkPreview } from "@/components/link-previews";
 
 export async function ArtDetail({ artSlug }: { artSlug: string }) {
   const art = await getArtBySlug(artSlug);
@@ -94,7 +94,7 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
           <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
             Etsy
           </p>
-          <LinkPreview url={art.etsy_url} />
+          <EtsyPreview url={art.etsy_url} />
         </div>
       )}
     </section>

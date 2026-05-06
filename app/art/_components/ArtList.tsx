@@ -23,7 +23,7 @@ import {
 import { getPublicArt, getPrivateArt } from "@/lib/queries/art";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
-import { LinkPreview } from "@/components/link-preview";
+import { EtsyPreview, LinkPreview } from "@/components/link-previews";
 import type { PublicArt } from "@/types/art";
 
 const CARD_ACCENTS = [
@@ -139,21 +139,7 @@ export async function ArtworkCard({
           </Suspense>
         ) : null}
         {art.etsy_url ? (
-          <Suspense
-            fallback={
-              <div className="aspect-square w-full max-w-sm animate-pulse rounded-[1.25rem] bg-muted" />
-            }
-          >
-            <div className="overflow-hidden rounded-[1.25rem] border border-border/60 bg-background">
-              <div className="flex items-center gap-2 border-b border-border/60 px-4 py-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                <ImageIcon className="h-3.5 w-3.5" />
-                Etsy listing
-              </div>
-              <div className="p-3">
-                <LinkPreview url={art.etsy_url} />
-              </div>
-            </div>
-          </Suspense>
+          <EtsyPreview url={art.etsy_url} compact />
         ) : null}
       </CardContent>
       <CardFooter className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
