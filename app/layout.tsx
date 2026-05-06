@@ -49,7 +49,6 @@ export default function RootLayout({
                     <div className="flex items-center gap-2">
                       <Link href="/art">Art</Link>
                       <Link href="/artist">Artists</Link>
-                      <Link href="/profile">Profile</Link>
                     </div>
                   </div>
                   {!hasEnvVars ? (
