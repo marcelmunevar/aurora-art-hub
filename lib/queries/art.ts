@@ -1,6 +1,7 @@
 import "server-only";
 
 import {
+  createConflictQueryError,
   createNotFoundQueryError,
   createPostgrestQueryError,
   createUnauthorizedQueryError,
@@ -161,6 +162,12 @@ export async function createArt(input: CreateArtInput): Promise<Art> {
     .single();
 
   if (error) {
+    if (error.code === "23505") {
+      throw createConflictQueryError(
+        "An artwork with that title already exists. Please use a different title.",
+      );
+    }
+
     throw createPostgrestQueryError("Failed to create art.", error);
   }
 
@@ -181,6 +188,12 @@ export async function updateArt(
     .maybeSingle();
 
   if (error) {
+    if (error.code === "23505") {
+      throw createConflictQueryError(
+        "An artwork with that title already exists. Please use a different title.",
+      );
+    }
+
     throw createPostgrestQueryError("Failed to update art.", error);
   }
 
