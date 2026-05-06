@@ -427,6 +427,8 @@ function OwnedArtworkSection({
                 artist: null,
               }}
               isOwner
+              hideArtist
+              hideOwnerBadge
             />
           ))}
         </div>

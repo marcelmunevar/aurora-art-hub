@@ -63,9 +63,13 @@ function getArtistInitials(name: string | null | undefined): string {
 export async function ArtworkCard({
   art,
   isOwner,
+  hideArtist = false,
+  hideOwnerBadge = false,
 }: {
   art: ArtworkCardArt;
   isOwner: boolean;
+  hideArtist?: boolean;
+  hideOwnerBadge?: boolean;
 }) {
   const artistInitials = getArtistInitials(art.artist?.name);
   const artistName = art.artist?.name ?? "Unknown artist";
@@ -76,25 +80,27 @@ export async function ArtworkCard({
       <CardHeader className="relative gap-5 px-0 pb-4 pt-0">
         <div className={`bg-gradient-to-br ${accentClass} px-6 py-6`}>
           <div className="flex items-start gap-4">
-            {art.artist?.slug ? (
-              <Link
-                href={`/artist/${art.artist.slug}`}
-                title={artistName}
-                aria-label={`View ${artistName} profile`}
-                className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.35rem] border border-background/80 bg-background/90 text-lg font-semibold text-foreground shadow-sm transition-transform duration-200 hover:scale-[1.03] hover:border-foreground/20"
-              >
-                <div className="absolute inset-0 rounded-[1.35rem] bg-[radial-gradient(circle_at_top,_hsl(var(--foreground)/0.06),_transparent_70%)]" />
-                <span className="relative">{artistInitials}</span>
-              </Link>
-            ) : (
-              <div
-                title={artistName}
-                className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.35rem] border border-background/80 bg-background/90 text-lg font-semibold text-foreground shadow-sm"
-              >
-                <div className="absolute inset-0 rounded-[1.35rem] bg-[radial-gradient(circle_at_top,_hsl(var(--foreground)/0.06),_transparent_70%)]" />
-                <span className="relative">{artistInitials}</span>
-              </div>
-            )}
+            {!hideArtist ? (
+              art.artist?.slug ? (
+                <Link
+                  href={`/artist/${art.artist.slug}`}
+                  title={artistName}
+                  aria-label={`View ${artistName} profile`}
+                  className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.35rem] border border-background/80 bg-background/90 text-lg font-semibold text-foreground shadow-sm transition-transform duration-200 hover:scale-[1.03] hover:border-foreground/20"
+                >
+                  <div className="absolute inset-0 rounded-[1.35rem] bg-[radial-gradient(circle_at_top,_hsl(var(--foreground)/0.06),_transparent_70%)]" />
+                  <span className="relative">{artistInitials}</span>
+                </Link>
+              ) : (
+                <div
+                  title={artistName}
+                  className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.35rem] border border-background/80 bg-background/90 text-lg font-semibold text-foreground shadow-sm"
+                >
+                  <div className="absolute inset-0 rounded-[1.35rem] bg-[radial-gradient(circle_at_top,_hsl(var(--foreground)/0.06),_transparent_70%)]" />
+                  <span className="relative">{artistInitials}</span>
+                </div>
+              )
+            ) : null}
             <div className="min-w-0 space-y-3">
               <div className="space-y-2">
                 <CardTitle className="text-xl leading-tight">
@@ -105,19 +111,21 @@ export async function ArtworkCard({
                     {art.title}
                   </Link>
                 </CardTitle>
-                {art.artist?.slug ? (
-                  <Link
-                    href={`/artist/${art.artist.slug}`}
-                    className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <span>{artistName}</span>
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  </Link>
-                ) : (
-                  <div className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                    <span>{artistName}</span>
-                  </div>
-                )}
+                {!hideArtist ? (
+                  art.artist?.slug ? (
+                    <Link
+                      href={`/artist/${art.artist.slug}`}
+                      className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <span>{artistName}</span>
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Link>
+                  ) : (
+                    <div className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                      <span>{artistName}</span>
+                    </div>
+                  )
+                ) : null}
               </div>
               <div className="flex flex-wrap gap-2">
                 <Badge
@@ -131,7 +139,7 @@ export async function ArtworkCard({
                   )}
                   {art.is_public ? "Public" : "Private"}
                 </Badge>
-                {isOwner ? (
+                {isOwner && !hideOwnerBadge ? (
                   <Badge className="rounded-full border-transparent bg-foreground text-background">
                     Owner
                   </Badge>
