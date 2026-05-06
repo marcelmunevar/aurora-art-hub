@@ -68,6 +68,16 @@ const descriptionSchema = z.preprocess(
 
 const isPublicSchema = z.preprocess(normalizeBoolean, z.boolean());
 
+const optionalUrlSchema = z.preprocess(
+  normalizeOptionalText,
+  z
+    .string()
+    .url("Must be a valid URL.")
+    .max(2048, "URL must be 2048 characters or fewer.")
+    .nullable()
+    .optional(),
+);
+
 const instagramUrlSchema = z.preprocess(
   normalizeOptionalText,
   z
@@ -87,6 +97,7 @@ export const createArtSchema: z.ZodType<CreateArtInput> = z.object({
   description: descriptionSchema,
   is_public: isPublicSchema.optional().default(false),
   instagram_url: instagramUrlSchema,
+  etsy_url: optionalUrlSchema,
 });
 
 export const updateArtSchema: z.ZodType<UpdateArtInput> = z
@@ -96,6 +107,7 @@ export const updateArtSchema: z.ZodType<UpdateArtInput> = z
     description: descriptionSchema,
     is_public: isPublicSchema.optional(),
     instagram_url: instagramUrlSchema,
+    etsy_url: optionalUrlSchema,
   })
   .refine(
     (value) =>

@@ -8,6 +8,7 @@ export interface Art {
   description: string | null;
   is_public: boolean;
   instagram_url: string | null;
+  etsy_url: string | null;
 }
 
 export interface CreateArtInput {
@@ -16,6 +17,7 @@ export interface CreateArtInput {
   description?: string | null;
   is_public?: boolean;
   instagram_url?: string | null;
+  etsy_url?: string | null;
 }
 
 export interface PublicArt extends Art {
@@ -28,4 +30,5 @@ export interface UpdateArtInput {
   description?: string | null;
   is_public?: boolean;
   instagram_url?: string | null;
+  etsy_url?: string | null;
 }

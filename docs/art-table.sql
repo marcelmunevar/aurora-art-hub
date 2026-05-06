@@ -9,7 +9,8 @@ create table
         title text not null,
         description text,
         is_public boolean not null default false,
-        instagram_url text
+        instagram_url text,
+        etsy_url text
     );
 
 -- Turn on row-level security so policies are enforced.

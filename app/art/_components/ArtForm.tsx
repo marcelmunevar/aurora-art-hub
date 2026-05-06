@@ -60,6 +60,7 @@ function getArtInput(formData: FormData): CreateArtInput {
     description: getStringValue(formData, "description"),
     is_public: formData.has("is_public"),
     instagram_url: getStringValue(formData, "instagram_url"),
+    etsy_url: getStringValue(formData, "etsy_url"),
   };
 }
 
@@ -106,6 +107,7 @@ export async function ArtForm(props: ArtFormProps) {
   const defaultDescription = art?.description ?? "";
   const defaultIsPublic = art?.is_public ?? false;
   const defaultInstagramUrl = art?.instagram_url ?? "";
+  const defaultEtsyUrl = art?.etsy_url ?? "";
   const errorRedirectBasePath =
     mode === "create" ? "/art/add" : `/art/${currentSlug}/edit`;
 
@@ -257,6 +259,17 @@ export async function ArtForm(props: ArtFormProps) {
               type="url"
               placeholder="https://www.instagram.com/p/..."
               defaultValue={defaultInstagramUrl}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="etsy_url">Etsy listing URL</Label>
+            <Input
+              id="etsy_url"
+              name="etsy_url"
+              type="url"
+              placeholder="https://www.etsy.com/listing/..."
+              defaultValue={defaultEtsyUrl}
             />
           </div>
 

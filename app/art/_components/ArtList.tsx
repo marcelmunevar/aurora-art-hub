@@ -45,6 +45,7 @@ type ArtworkCardArt = {
   description: string | null;
   is_public: boolean;
   instagram_url?: string | null;
+  etsy_url?: string | null;
   artist?: ArtworkCardArtist | null;
 };
 
@@ -133,6 +134,23 @@ export async function ArtworkCard({
               </div>
               <div className="p-3">
                 <LinkPreview url={art.instagram_url} />
+              </div>
+            </div>
+          </Suspense>
+        ) : null}
+        {art.etsy_url ? (
+          <Suspense
+            fallback={
+              <div className="aspect-square w-full max-w-sm animate-pulse rounded-[1.25rem] bg-muted" />
+            }
+          >
+            <div className="overflow-hidden rounded-[1.25rem] border border-border/60 bg-background">
+              <div className="flex items-center gap-2 border-b border-border/60 px-4 py-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                <ImageIcon className="h-3.5 w-3.5" />
+                Etsy listing
+              </div>
+              <div className="p-3">
+                <LinkPreview url={art.etsy_url} />
               </div>
             </div>
           </Suspense>

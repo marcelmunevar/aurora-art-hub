@@ -88,6 +88,15 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
           <LinkPreview url={art.instagram_url} />
         </div>
       )}
+
+      {art.etsy_url && (
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Etsy
+          </p>
+          <LinkPreview url={art.etsy_url} />
+        </div>
+      )}
     </section>
   );
 }
