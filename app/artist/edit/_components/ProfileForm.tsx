@@ -185,7 +185,7 @@ export async function ProfileForm({
             <Input
               id="name"
               name="name"
-              placeholder="Marcel Studio"
+              placeholder="Aurora Studio"
               defaultValue={artist?.name ?? ""}
               required
             />

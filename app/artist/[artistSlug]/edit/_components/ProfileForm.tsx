@@ -174,7 +174,7 @@ export async function ProfileForm({
               <Input
                 id="slug"
                 name="slug"
-                placeholder="marcel-studio"
+                placeholder="aurora-studio"
                 defaultValue={artist?.slug ?? ""}
                 required
               />
@@ -185,7 +185,7 @@ export async function ProfileForm({
               <Input
                 id="name"
                 name="name"
-                placeholder="Marcel Studio"
+                placeholder="Aurora Studio"
                 defaultValue={artist?.name ?? ""}
                 required
               />
