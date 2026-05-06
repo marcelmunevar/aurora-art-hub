@@ -37,15 +37,26 @@ type EditArtFormProps = BaseArtFormProps & {
 
 type ArtFormProps = CreateArtFormProps | EditArtFormProps;
 
+function titleToSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function getStringValue(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
   return typeof value === "string" ? value : undefined;
 }
 
 function getArtInput(formData: FormData): CreateArtInput {
+  const title = getStringValue(formData, "title") ?? "";
   return {
-    slug: getStringValue(formData, "slug") ?? "",
-    title: getStringValue(formData, "title") ?? "",
+    slug: titleToSlug(title),
+    title,
     description: getStringValue(formData, "description"),
     is_public: formData.has("is_public"),
     instagram_url: getStringValue(formData, "instagram_url"),
@@ -91,7 +102,6 @@ export async function ArtForm(props: ArtFormProps) {
       ? "Create a new artwork entry for your artist profile."
       : "Update the artwork details shown across Aurora Art Hub.";
   const submitLabel = mode === "create" ? "Create artwork" : "Save artwork";
-  const defaultSlug = art?.slug ?? "";
   const defaultTitle = art?.title ?? "";
   const defaultDescription = art?.description ?? "";
   const defaultIsPublic = art?.is_public ?? false;
@@ -198,28 +208,15 @@ export async function ArtForm(props: ArtFormProps) {
             </div>
           ) : null}
 
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input
-                id="slug"
-                name="slug"
-                placeholder="aurora-study"
-                defaultValue={defaultSlug}
-                required
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                name="title"
-                placeholder="Aurora Study"
-                defaultValue={defaultTitle}
-                required
-              />
-            </div>
+          <div className="grid gap-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              name="title"
+              placeholder="Aurora Study"
+              defaultValue={defaultTitle}
+              required
+            />
           </div>
 
           <div className="grid gap-2">
