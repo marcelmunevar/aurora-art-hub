@@ -7,7 +7,6 @@ import {
   EyeOff,
   ImageIcon,
   Pencil,
-  Plus,
   Sparkles,
 } from "lucide-react";
 
@@ -241,31 +240,6 @@ export async function ArtList({ type }: ArtListProps) {
         const isOwner = currentUserArtistId === art.artist_id;
         return <ArtworkCard key={art.id} art={art} isOwner={isOwner} />;
       })}
-
-      {type === "public" && isAuthenticated ? (
-        <Card className="flex h-full min-h-72 items-center justify-center overflow-hidden rounded-[1.75rem] border-dashed border-border/70 bg-[radial-gradient(circle_at_top,_hsl(var(--foreground)/0.08),_transparent_55%),linear-gradient(180deg,_hsl(var(--background)),_hsl(var(--muted)/0.55))] p-6">
-          <CardContent className="flex w-full flex-col items-start justify-center gap-5 p-0">
-            <div className="rounded-2xl border border-border/60 bg-background/90 p-3 shadow-sm">
-              <Plus className="h-5 w-5" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-2xl font-semibold tracking-tight">
-                Add a new piece
-              </h3>
-              <p className="text-sm leading-6 text-muted-foreground">
-                Publish a finished work to the gallery or keep it private until
-                it is ready.
-              </p>
-            </div>
-            <Button asChild className="w-full rounded-full sm:w-auto">
-              <Link href="/art/add">
-                Add artwork
-                <Plus className="h-4 w-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      ) : null}
     </div>
   );
 }

@@ -1,14 +1,7 @@
 import { Suspense } from "react";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Lock,
-  Sparkles,
-  UserRound,
-} from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Sparkles, UserRound } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -109,10 +102,6 @@ export default function Page() {
           <ArtList type="public" />
         </Suspense>
       </div>
-
-      <Suspense>
-        <PrivateArtSection />
-      </Suspense>
     </section>
   );
 }
@@ -228,41 +217,5 @@ async function AuthenticatedHeroAction() {
     >
       <Link href="/art/add">Share new artwork</Link>
     </Button>
-  );
-}
-
-async function PrivateArtSection() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const isAuthenticated = !!data?.claims;
-
-  if (!isAuthenticated) return null;
-
-  return (
-    <div className="rounded-[2rem] border border-border/60 bg-muted/20 p-6 sm:p-8">
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              <Lock className="h-3.5 w-3.5" />
-              Private collection
-            </div>
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Your private artwork
-            </h2>
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-              Artwork you have kept private. Only you can see these.
-            </p>
-          </div>
-          <p className="max-w-sm text-sm leading-6 text-muted-foreground">
-            Use this section as a staging area before publishing pieces to the
-            public gallery.
-          </p>
-        </div>
-        <Suspense fallback={<ArtListFallback />}>
-          <ArtList type="private" />
-        </Suspense>
-      </div>
-    </div>
   );
 }
