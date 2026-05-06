@@ -34,6 +34,21 @@ const CARD_ACCENTS = [
   "from-rose-200/70 via-pink-100/40 to-transparent dark:from-rose-500/20 dark:via-pink-400/10 dark:to-transparent",
 ];
 
+type ArtworkCardArtist = {
+  name: string | null;
+  slug: string | null;
+};
+
+type ArtworkCardArt = {
+  id: number;
+  slug: string;
+  title: string;
+  description: string | null;
+  is_public: boolean;
+  instagram_url?: string | null;
+  artist?: ArtworkCardArtist | null;
+};
+
 function getArtistInitials(name: string | null | undefined): string {
   if (!name?.trim()) return "AU";
 
@@ -45,7 +60,13 @@ function getArtistInitials(name: string | null | undefined): string {
     .join("");
 }
 
-async function ArtCard({ art, isOwner }: { art: PublicArt; isOwner: boolean }) {
+export async function ArtworkCard({
+  art,
+  isOwner,
+}: {
+  art: ArtworkCardArt;
+  isOwner: boolean;
+}) {
   const artistInitials = getArtistInitials(art.artist?.name);
   const artistName = art.artist?.name ?? "Unknown artist";
   const accentClass = CARD_ACCENTS[art.id % CARD_ACCENTS.length];
@@ -125,7 +146,7 @@ async function ArtCard({ art, isOwner }: { art: PublicArt; isOwner: boolean }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 space-y-4 text-sm text-muted-foreground">
-        {art.instagram_url && (
+        {art.instagram_url ? (
           <Suspense
             fallback={
               <div className="aspect-square w-full max-w-sm animate-pulse rounded-[1.25rem] bg-muted" />
@@ -141,7 +162,7 @@ async function ArtCard({ art, isOwner }: { art: PublicArt; isOwner: boolean }) {
               </div>
             </div>
           </Suspense>
-        )}
+        ) : null}
       </CardContent>
       <CardFooter className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
         <Button asChild className="w-full min-w-0 rounded-full md:flex-1">
@@ -163,6 +184,39 @@ async function ArtCard({ art, isOwner }: { art: PublicArt; isOwner: boolean }) {
           </Button>
         ) : null}
       </CardFooter>
+    </Card>
+  );
+}
+
+export function ArtworkEmptyState({
+  title,
+  description,
+  actionHref,
+  actionLabel,
+}: {
+  title: string;
+  description: string;
+  actionHref?: string;
+  actionLabel?: string;
+}) {
+  return (
+    <Card className="rounded-[1.75rem] border-dashed border-border/70 bg-muted/20">
+      <CardHeader className="items-start gap-4">
+        <div className="rounded-2xl border border-border/60 bg-background/90 p-3">
+          <Sparkles className="h-5 w-5" />
+        </div>
+        <div className="space-y-2">
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </div>
+      </CardHeader>
+      {actionHref && actionLabel ? (
+        <CardContent>
+          <Button asChild className="rounded-full">
+            <Link href={actionHref}>{actionLabel}</Link>
+          </Button>
+        </CardContent>
+      ) : null}
     </Card>
   );
 }
@@ -198,39 +252,19 @@ export async function ArtList({ type }: ArtListProps) {
 
   if (artworks.length === 0 && !isAuthenticated) {
     return (
-      <Card className="rounded-[1.75rem] border-dashed border-border/70 bg-muted/20">
-        <CardHeader className="items-start gap-4">
-          <div className="rounded-2xl border border-border/60 bg-background/90 p-3">
-            <Sparkles className="h-5 w-5" />
-          </div>
-          <div className="space-y-2">
-            <CardTitle>{emptyTitle}</CardTitle>
-            <CardDescription>{emptyDescription}</CardDescription>
-          </div>
-        </CardHeader>
-      </Card>
+      <ArtworkEmptyState title={emptyTitle} description={emptyDescription} />
     );
   }
 
   return (
     <div className="grid gap-5 min-[520px]:grid-cols-2 min-[1080px]:grid-cols-3">
       {artworks.length === 0 ? (
-        <Card className="rounded-[1.75rem] border-dashed border-border/70 bg-muted/20">
-          <CardHeader className="items-start gap-4">
-            <div className="rounded-2xl border border-border/60 bg-background/90 p-3">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div className="space-y-2">
-              <CardTitle>{emptyTitle}</CardTitle>
-              <CardDescription>{emptyDescription}</CardDescription>
-            </div>
-          </CardHeader>
-        </Card>
+        <ArtworkEmptyState title={emptyTitle} description={emptyDescription} />
       ) : null}
 
       {artworks.map((art) => {
         const isOwner = currentUserArtistId === art.artist_id;
-        return <ArtCard key={art.id} art={art} isOwner={isOwner} />;
+        return <ArtworkCard key={art.id} art={art} isOwner={isOwner} />;
       })}
 
       {type === "public" && isAuthenticated ? (

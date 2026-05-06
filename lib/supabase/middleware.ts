@@ -1,6 +1,6 @@
-const PROTECTED_PATHS = new Set(["/profile", "/protected"]);
+const PROTECTED_PATHS = new Set(["/dashboard", "/profile", "/protected"]);
 
-const PROTECTED_PREFIXES = ["/protected/"];
+const PROTECTED_PREFIXES = ["/dashboard/", "/protected/"];
 
 const PROTECTED_PATTERNS = [/^\/art\/add\/?$/, /^\/art\/[^/]+\/edit\/?$/];
 
