@@ -10,6 +10,7 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { HeroBubble } from "@/components/hero-bubble";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,51 +49,45 @@ async function DashboardContent() {
 
   return (
     <section className="flex flex-col gap-10 pb-6">
-      <div className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-[radial-gradient(circle_at_top_left,_hsl(var(--chart-2)/0.16),_transparent_30%),linear-gradient(135deg,_hsl(var(--background)),_hsl(var(--muted)/0.6))] p-8 shadow-sm sm:p-10">
-        <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_center,_hsl(var(--foreground)/0.08),_transparent_58%)] lg:block" />
-        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl space-y-5">
-            <Badge className="w-fit rounded-full border-transparent bg-foreground text-background">
-              <LayoutDashboard className="mr-1 h-3.5 w-3.5" />
-              Dashboard
-            </Badge>
-            <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-                Studio overview
-              </p>
-              <h1 className="max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
-                Keep your profile, artwork, and visibility controls in one
-                place.
-              </h1>
-              <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                {userEmail
-                  ? `Signed in as ${userEmail}. Review your artist profile, track public versus private pieces, and jump back into editing.`
-                  : "Review your artist profile, track public versus private pieces, and jump back into editing."}
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Button asChild size="lg" className="rounded-full px-6 sm:w-auto">
-                <Link
-                  href={artist ? `/artist/${artist.slug}` : "/artist/edit"}
-                >
-                  {artist ? "View profile" : "Create profile"}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-full px-6 sm:w-auto"
-              >
-                <Link href={artist ? "/art/add" : "/art"}>
-                  {artist ? "Add artwork" : "Browse gallery"}
-                  <Plus className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-
+      <HeroBubble
+        badge={
+          <Badge className="w-fit rounded-full border-transparent bg-foreground text-background">
+            <LayoutDashboard className="mr-1 h-3.5 w-3.5" />
+            Dashboard
+          </Badge>
+        }
+        eyebrow="Studio overview"
+        title="Keep your profile, artwork, and visibility controls in one place."
+        description={
+          userEmail
+            ? `Signed in as ${userEmail}. Review your artist profile, track public versus private pieces, and jump back into editing.`
+            : "Review your artist profile, track public versus private pieces, and jump back into editing."
+        }
+        contentClassName="space-y-5"
+        textClassName="space-y-3"
+        layoutClassName="gap-8"
+        actions={
+          <>
+            <Button asChild size="lg" className="rounded-full px-6 sm:w-auto">
+              <Link href={artist ? `/artist/${artist.slug}` : "/artist/edit"}>
+                {artist ? "View profile" : "Create profile"}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="rounded-full px-6 sm:w-auto"
+            >
+              <Link href={artist ? "/art/add" : "/art"}>
+                {artist ? "Add artwork" : "Browse gallery"}
+                <Plus className="h-4 w-4" />
+              </Link>
+            </Button>
+          </>
+        }
+        aside={
           <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
             <DashboardStatCard
               label="Artist profile"
@@ -119,8 +114,8 @@ async function DashboardContent() {
               icon={<Shield className="h-4 w-4" />}
             />
           </div>
-        </div>
-      </div>
+        }
+      />
     </section>
   );
 }

@@ -20,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { HeroBubble } from "@/components/hero-bubble";
 import { ArtworkCard, ArtworkEmptyState } from "@/app/art/_components/ArtList";
 import { getArtsByArtistId } from "@/lib/queries/art";
 import { getArtistBySlug, getCurrentUserArtist } from "@/lib/queries/artist";
@@ -54,56 +55,52 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
 
   return (
     <section className="flex flex-col gap-8">
-      <div className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-[radial-gradient(circle_at_top_left,_hsl(var(--chart-2)/0.16),_transparent_30%),linear-gradient(135deg,_hsl(var(--background)),_hsl(var(--muted)/0.6))] p-8 shadow-sm sm:p-10">
-        <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_center,_hsl(var(--foreground)/0.08),_transparent_58%)] lg:block" />
-        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl space-y-6">
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              Artist
-            </p>
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                      {artist.name}
-                    </h1>
-                    <Badge variant={artist.is_public ? "default" : "secondary"}>
-                      {artist.is_public ? "Public profile" : "Private profile"}
-                    </Badge>
-                  </div>
-                  {artist.location ? (
-                    <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{artist.location}</span>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-
-              <p className="max-w-2xl whitespace-pre-wrap text-sm leading-7 text-muted-foreground sm:text-base">
-                {artist.bio?.trim() || "This artist has not added a bio yet."}
-              </p>
+      <HeroBubble
+        badge={<span className="sr-only">Artist profile</span>}
+        eyebrow="Artist"
+        title={
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                {artist.name}
+              </h1>
+              <Badge variant={artist.is_public ? "default" : "secondary"}>
+                {artist.is_public ? "Public profile" : "Private profile"}
+              </Badge>
             </div>
-
-            {isOwner ? (
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/artist/edit`}>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Edit profile
-                  </Link>
-                </Button>
-                <Button asChild size="sm">
-                  <Link href="/art/add">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add artwork
-                  </Link>
-                </Button>
+            {artist.location ? (
+              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4" />
+                <span>{artist.location}</span>
               </div>
             ) : null}
           </div>
-
+        }
+        description={
+          artist.bio?.trim() || "This artist has not added a bio yet."
+        }
+        titleClassName="max-w-none text-inherit"
+        descriptionClassName="max-w-2xl whitespace-pre-wrap"
+        actions={
+          isOwner ? (
+            <>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/artist/edit">
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit profile
+                </Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/art/add">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add artwork
+                </Link>
+              </Button>
+            </>
+          ) : null
+        }
+        layoutClassName="gap-8"
+        aside={
           <div className="grid gap-3 md:grid-cols-2 xl:w-[30rem] xl:grid-cols-3">
             <ArtistStatCard
               label="Profile status"
@@ -128,6 +125,7 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
                   artist.website,
                   artist.instagram_link,
                   artist.etsy_link,
+                  artist.redbubble_link,
                 ].filter(Boolean).length,
               )}
               description="External links available from this profile."
@@ -135,8 +133,8 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
               className="md:col-span-2 xl:col-span-1"
             />
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {artist.website ? (
