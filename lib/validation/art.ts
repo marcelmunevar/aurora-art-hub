@@ -100,6 +100,13 @@ const imagePathSchema = z.preprocess(
     .optional(),
 );
 
+const imageDimensionSchema = z
+  .number()
+  .int("Image dimensions must be whole numbers.")
+  .positive("Image dimensions must be greater than zero.")
+  .nullable()
+  .optional();
+
 export const createArtSchema: z.ZodType<CreateArtInput> = z.object({
   slug: slugSchema,
   title: titleSchema,
@@ -108,6 +115,8 @@ export const createArtSchema: z.ZodType<CreateArtInput> = z.object({
   instagram_url: instagramUrlSchema,
   etsy_url: optionalUrlSchema,
   image_path: imagePathSchema,
+  image_width: imageDimensionSchema,
+  image_height: imageDimensionSchema,
 });
 
 export const updateArtSchema: z.ZodType<UpdateArtInput> = z
@@ -119,6 +128,8 @@ export const updateArtSchema: z.ZodType<UpdateArtInput> = z
     instagram_url: instagramUrlSchema,
     etsy_url: optionalUrlSchema,
     image_path: imagePathSchema,
+    image_width: imageDimensionSchema,
+    image_height: imageDimensionSchema,
   })
   .refine(
     (value) =>

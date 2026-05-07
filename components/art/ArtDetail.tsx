@@ -99,8 +99,8 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
         <Image
           src={imageUrl}
           alt={art.title}
-          width={1200}
-          height={900}
+          width={art.image_width ?? 1200}
+          height={art.image_height ?? 900}
           className="self-start rounded-2xl object-contain"
           style={{ width: "auto", height: "auto", maxHeight: "520px" }}
         />

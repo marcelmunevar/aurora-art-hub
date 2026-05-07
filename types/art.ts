@@ -10,6 +10,8 @@ export interface Art {
   instagram_url: string | null;
   etsy_url: string | null;
   image_path: string | null;
+  image_width: number | null;
+  image_height: number | null;
 }
 
 export interface CreateArtInput {
@@ -20,6 +22,8 @@ export interface CreateArtInput {
   instagram_url?: string | null;
   etsy_url?: string | null;
   image_path?: string | null;
+  image_width?: number | null;
+  image_height?: number | null;
 }
 
 export interface PublicArt extends Art {
@@ -34,4 +38,6 @@ export interface UpdateArtInput {
   instagram_url?: string | null;
   etsy_url?: string | null;
   image_path?: string | null;
+  image_width?: number | null;
+  image_height?: number | null;
 }

@@ -155,14 +155,19 @@ export async function ArtForm(props: ArtFormProps) {
 
     if (mode === "create") {
       let uploadedImagePath: string | null = null;
+      let uploadedImageWidth: number | null = null;
+      let uploadedImageHeight: number | null = null;
 
       if (imageFile) {
         try {
-          const { image_path } = await uploadArtImage({
-            file: imageFile,
-            slug: baseInput.slug,
-          });
+          const { image_path, image_width, image_height } =
+            await uploadArtImage({
+              file: imageFile,
+              slug: baseInput.slug,
+            });
           uploadedImagePath = image_path;
+          uploadedImageWidth = image_width;
+          uploadedImageHeight = image_height;
         } catch (error) {
           const message =
             error instanceof QueryError || error instanceof Error
@@ -176,6 +181,8 @@ export async function ArtForm(props: ArtFormProps) {
       const input: CreateArtInput = {
         ...baseInput,
         image_path: uploadedImagePath,
+        image_width: uploadedImageWidth,
+        image_height: uploadedImageHeight,
       };
       const result = safeValidateCreateArtInput(input);
 
@@ -226,6 +233,8 @@ export async function ArtForm(props: ArtFormProps) {
     }
 
     let newImagePath: string | null = null;
+    let newImageWidth: number | null = null;
+    let newImageHeight: number | null = null;
 
     if (removeCurrentImage && imageFile) {
       redirect(
@@ -237,11 +246,13 @@ export async function ArtForm(props: ArtFormProps) {
 
     if (imageFile) {
       try {
-        const { image_path } = await uploadArtImage({
+        const { image_path, image_width, image_height } = await uploadArtImage({
           file: imageFile,
           slug: baseInput.slug,
         });
         newImagePath = image_path;
+        newImageWidth = image_width;
+        newImageHeight = image_height;
       } catch (error) {
         const message =
           error instanceof QueryError || error instanceof Error
@@ -255,6 +266,8 @@ export async function ArtForm(props: ArtFormProps) {
     const input = {
       ...baseInput,
       image_path: removeCurrentImage ? null : (newImagePath ?? undefined),
+      image_width: removeCurrentImage ? null : (newImageWidth ?? undefined),
+      image_height: removeCurrentImage ? null : (newImageHeight ?? undefined),
     };
     const result = safeValidateUpdateArtInput(input);
 
