@@ -1,14 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRight,
   ArrowUpRight,
   ExternalLink,
   Eye,
   EyeOff,
   Instagram,
   Pencil,
-  Store,
   Sparkles,
 } from "lucide-react";
 
@@ -79,7 +77,7 @@ export async function ArtworkCard({
 
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border-border/60 bg-card/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <CardHeader className="relative gap-5 px-0 pb-4 pt-0">
+      <CardHeader className="gap-5 px-0 pb-4 pt-0">
         <div className={`bg-gradient-to-br ${accentClass} px-6 py-6`}>
           <div className="flex items-start gap-4">
             <div className="min-w-0 space-y-3">
@@ -136,7 +134,7 @@ export async function ArtworkCard({
                 src={imageUrl}
                 alt={art.title}
                 fill
-                className="object-contain object-left p-1 transition-transform duration-500 group-hover:scale-[1.02]"
+                className="object-contain object-left min-[1080px]:object-center"
                 sizes="(min-width: 1080px) 33vw, (min-width: 520px) 50vw, 100vw"
               />
             </div>
@@ -147,61 +145,41 @@ export async function ArtworkCard({
             "This artwork does not have a description yet."}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 space-y-4 text-sm text-muted-foreground">
-        {art.instagram_url || art.etsy_url ? (
-          <div className="space-y-2">
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              Links
-            </p>
-            <ul className="space-y-1.5">
-              {art.instagram_url ? (
-                <li>
-                  <a
-                    href={art.instagram_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Open Instagram link"
-                    title="Instagram"
-                    className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:text-foreground"
-                  >
-                    <Instagram className="h-4 w-4" />
-                    <span>Instagram</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                </li>
-              ) : null}
-              {art.etsy_url ? (
-                <li>
-                  <a
-                    href={art.etsy_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Open Etsy link"
-                    title="Etsy"
-                    className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:text-foreground"
-                  >
-                    <Store className="h-4 w-4" />
-                    <span>Etsy</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                </li>
-              ) : null}
-            </ul>
-          </div>
+      <CardContent className="flex-1" />
+      <CardFooter className="flex flex-col gap-3">
+        {art.etsy_url ? (
+          <Button
+            asChild
+            className="w-full rounded-full bg-orange-600 text-white hover:bg-orange-700"
+          >
+            <a href={art.etsy_url} target="_blank" rel="noopener noreferrer">
+              <Sparkles className="h-4 w-4" />
+              Buy on Etsy
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </Button>
         ) : null}
-      </CardContent>
-      <CardFooter className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
-        <Button asChild className="w-full min-w-0 rounded-full md:flex-1">
-          <Link href={`/art/${art.slug}`}>
-            View artwork
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </Button>
+        {art.instagram_url ? (
+          <Button
+            asChild
+            className="w-full rounded-full border-0 bg-gradient-to-r from-fuchsia-600 via-pink-500 to-orange-400 text-white hover:opacity-90"
+          >
+            <a
+              href={art.instagram_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Instagram className="h-4 w-4" />
+              View on Instagram
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </Button>
+        ) : null}
         {isOwner ? (
           <Button
             asChild
             variant="outline"
-            className="w-full min-w-0 rounded-full md:flex-1"
+            className="w-full min-w-0 rounded-full"
           >
             <Link href={`/art/${art.slug}/edit`}>
               Edit artwork
@@ -238,7 +216,7 @@ export function ArtworkEmptyState({
       </CardHeader>
       {actionHref && actionLabel ? (
         <CardContent>
-          <Button asChild className="rounded-full">
+          <Button asChild className="w-full rounded-full">
             <Link href={actionHref}>{actionLabel}</Link>
           </Button>
         </CardContent>
