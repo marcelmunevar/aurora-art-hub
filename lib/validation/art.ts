@@ -91,6 +91,15 @@ const instagramUrlSchema = z.preprocess(
     .optional(),
 );
 
+const imagePathSchema = z.preprocess(
+  normalizeOptionalText,
+  z
+    .string()
+    .max(1024, "Image path must be 1024 characters or fewer.")
+    .nullable()
+    .optional(),
+);
+
 export const createArtSchema: z.ZodType<CreateArtInput> = z.object({
   slug: slugSchema,
   title: titleSchema,
@@ -98,6 +107,7 @@ export const createArtSchema: z.ZodType<CreateArtInput> = z.object({
   is_public: isPublicSchema.optional().default(false),
   instagram_url: instagramUrlSchema,
   etsy_url: optionalUrlSchema,
+  image_path: imagePathSchema,
 });
 
 export const updateArtSchema: z.ZodType<UpdateArtInput> = z
@@ -108,6 +118,7 @@ export const updateArtSchema: z.ZodType<UpdateArtInput> = z
     is_public: isPublicSchema.optional(),
     instagram_url: instagramUrlSchema,
     etsy_url: optionalUrlSchema,
+    image_path: imagePathSchema,
   })
   .refine(
     (value) =>

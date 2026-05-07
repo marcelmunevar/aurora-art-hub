@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ExternalLink, Pencil, Sparkles } from "lucide-react";
+import Image from "next/image";
 
-import { getArtBySlug } from "@/lib/queries/art";
+import { getArtBySlug, getArtImagePublicUrl } from "@/lib/queries/art";
 import { getArtistById, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,16 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
   const isOwner = currentArtistId === art.artist_id;
 
   if (!art.is_public && !isOwner) notFound();
+
+  let imageUrl: string | null = null;
+
+  if (art.image_path) {
+    try {
+      imageUrl = getArtImagePublicUrl(art.image_path);
+    } catch {
+      imageUrl = null;
+    }
+  }
 
   return (
     <section className="w-full flex flex-col gap-8">
@@ -68,6 +79,17 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
           {art.description}
         </p>
       )}
+
+      {imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={art.title}
+          width={1200}
+          height={900}
+          className="self-start rounded-2xl object-contain"
+          style={{ width: "auto", height: "auto", maxHeight: "520px" }}
+        />
+      ) : null}
 
       {isOwner && (
         <div className="flex gap-3">

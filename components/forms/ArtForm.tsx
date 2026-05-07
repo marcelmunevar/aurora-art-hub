@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
@@ -12,7 +13,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createArt, getArtBySlug, updateArt } from "@/lib/queries/art";
+import {
+  getArtImagePublicUrl,
+  createArt,
+  deleteArtImage,
+  getArtBySlug,
+  updateArt,
+  uploadArtImage,
+} from "@/lib/queries/art";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 import {
@@ -50,6 +58,16 @@ function titleToSlug(title: string): string {
 function getStringValue(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
   return typeof value === "string" ? value : undefined;
+}
+
+function getImageFileValue(formData: FormData, key: string): File | null {
+  const value = formData.get(key);
+
+  if (!(value instanceof File) || value.size === 0) {
+    return null;
+  }
+
+  return value;
 }
 
 function getArtInput(formData: FormData): CreateArtInput {
@@ -108,6 +126,17 @@ export async function ArtForm(props: ArtFormProps) {
   const defaultIsPublic = art?.is_public ?? false;
   const defaultInstagramUrl = art?.instagram_url ?? "";
   const defaultEtsyUrl = art?.etsy_url ?? "";
+  const currentImagePath = art?.image_path ?? null;
+  const currentImageUrl = currentImagePath
+    ? (() => {
+        try {
+          return getArtImagePublicUrl(currentImagePath);
+        } catch {
+          return null;
+        }
+      })()
+    : null;
+
   const errorRedirectBasePath =
     mode === "create" ? "/art/add" : `/art/${currentSlug}/edit`;
 
@@ -117,12 +146,48 @@ export async function ArtForm(props: ArtFormProps) {
     const getErrorRedirectUrl = (message: string) =>
       `${errorRedirectBasePath}?error=${encodeURIComponent(message)}`;
 
-    const input = getArtInput(formData);
+    const baseInput = getArtInput(formData);
+    const imageFile = getImageFileValue(formData, "image");
+    const removeCurrentImage =
+      mode === "edit" && currentImagePath
+        ? formData.has("remove_image")
+        : false;
 
     if (mode === "create") {
+      let uploadedImagePath: string | null = null;
+
+      if (imageFile) {
+        try {
+          const { image_path } = await uploadArtImage({
+            file: imageFile,
+            slug: baseInput.slug,
+          });
+          uploadedImagePath = image_path;
+        } catch (error) {
+          const message =
+            error instanceof QueryError || error instanceof Error
+              ? error.message
+              : "Unable to upload image.";
+
+          redirect(getErrorRedirectUrl(message));
+        }
+      }
+
+      const input: CreateArtInput = {
+        ...baseInput,
+        image_path: uploadedImagePath,
+      };
       const result = safeValidateCreateArtInput(input);
 
       if (!result.success) {
+        if (uploadedImagePath) {
+          try {
+            await deleteArtImage(uploadedImagePath);
+          } catch {
+            // Best-effort cleanup for failed validation after upload.
+          }
+        }
+
         const message = result.error.issues[0]?.message ?? "Invalid art data.";
         redirect(getErrorRedirectUrl(message));
       }
@@ -132,6 +197,14 @@ export async function ArtForm(props: ArtFormProps) {
       try {
         createdArt = await createArt(result.data);
       } catch (error) {
+        if (uploadedImagePath) {
+          try {
+            await deleteArtImage(uploadedImagePath);
+          } catch {
+            // Best-effort cleanup for failed create after upload.
+          }
+        }
+
         const message =
           error instanceof QueryError || error instanceof Error
             ? error.message
@@ -152,9 +225,48 @@ export async function ArtForm(props: ArtFormProps) {
       );
     }
 
+    let newImagePath: string | null = null;
+
+    if (removeCurrentImage && imageFile) {
+      redirect(
+        getErrorRedirectUrl(
+          "Choose either a new image upload or remove the current image.",
+        ),
+      );
+    }
+
+    if (imageFile) {
+      try {
+        const { image_path } = await uploadArtImage({
+          file: imageFile,
+          slug: baseInput.slug,
+        });
+        newImagePath = image_path;
+      } catch (error) {
+        const message =
+          error instanceof QueryError || error instanceof Error
+            ? error.message
+            : "Unable to upload image.";
+
+        redirect(getErrorRedirectUrl(message));
+      }
+    }
+
+    const input = {
+      ...baseInput,
+      image_path: removeCurrentImage ? null : (newImagePath ?? undefined),
+    };
     const result = safeValidateUpdateArtInput(input);
 
     if (!result.success) {
+      if (newImagePath) {
+        try {
+          await deleteArtImage(newImagePath);
+        } catch {
+          // Best-effort cleanup for failed validation after upload.
+        }
+      }
+
       const message = result.error.issues[0]?.message ?? "Invalid art data.";
       redirect(getErrorRedirectUrl(message));
     }
@@ -164,6 +276,14 @@ export async function ArtForm(props: ArtFormProps) {
     try {
       updatedArt = await updateArt(artId!, result.data);
     } catch (error) {
+      if (newImagePath) {
+        try {
+          await deleteArtImage(newImagePath);
+        } catch {
+          // Best-effort cleanup for failed update after upload.
+        }
+      }
+
       const message =
         error instanceof QueryError || error instanceof Error
           ? error.message
@@ -182,6 +302,18 @@ export async function ArtForm(props: ArtFormProps) {
 
     revalidatePath(`/art/${updatedArt.slug}/edit`);
     revalidatePath(`/artist/${artistSlug}`);
+
+    if (
+      currentImagePath &&
+      ((newImagePath && currentImagePath !== newImagePath) ||
+        removeCurrentImage)
+    ) {
+      try {
+        await deleteArtImage(currentImagePath);
+      } catch {
+        // Best-effort cleanup of replaced image.
+      }
+    }
 
     redirect(
       `/art/${updatedArt.slug}/edit?success=${encodeURIComponent(
@@ -271,6 +403,42 @@ export async function ArtForm(props: ArtFormProps) {
               placeholder="https://www.etsy.com/listing/..."
               defaultValue={defaultEtsyUrl}
             />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="image">Artwork image</Label>
+            {mode === "edit" && currentImageUrl ? (
+              <div className="relative h-56 w-full overflow-hidden rounded-xl">
+                <Image
+                  src={currentImageUrl}
+                  alt={`${defaultTitle || "Artwork"} image`}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 768px) 672px, 100vw"
+                />
+              </div>
+            ) : null}
+            <Input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+            />
+            {mode === "edit" && currentImagePath ? (
+              <>
+                <p className="text-xs text-muted-foreground">
+                  A new upload will replace the current artwork image.
+                </p>
+                <label className="mt-1 inline-flex items-center gap-2 text-sm text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    name="remove_image"
+                    className="h-4 w-4 rounded border-input"
+                  />
+                  Remove current image
+                </label>
+              </>
+            ) : null}
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">

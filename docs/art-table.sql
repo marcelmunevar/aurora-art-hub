@@ -10,7 +10,8 @@ create table
         description text,
         is_public boolean not null default false,
         instagram_url text,
-        etsy_url text
+        etsy_url text,
+        image_path text
     );
 
 -- Turn on row-level security so policies are enforced.

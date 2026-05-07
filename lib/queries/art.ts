@@ -5,6 +5,7 @@ import {
   createNotFoundQueryError,
   createPostgrestQueryError,
   createUnauthorizedQueryError,
+  QueryError,
 } from "./errors";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
@@ -16,8 +17,78 @@ import type {
 } from "@/types/art";
 
 const ART_COLUMNS =
-  "id, artist_id, slug, title, description, is_public, instagram_url, etsy_url";
+  "id, artist_id, slug, title, description, is_public, instagram_url, etsy_url, image_path";
 const PUBLIC_ART_COLUMNS = `${ART_COLUMNS}, artist:artist_id(id, name, slug)`;
+const ART_IMAGES_BUCKET = "art-images";
+const ALLOWED_ART_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+const MAX_ART_IMAGE_BYTES = 5 * 1024 * 1024;
+
+type UploadArtImageInput = {
+  file: File;
+  slug: string;
+};
+
+type UploadedArtImage = {
+  image_path: string;
+};
+
+function sanitizeFileSegment(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
+}
+
+function getFileExtensionFromMimeType(mimeType: string): string | null {
+  if (mimeType === "image/jpeg") return "jpg";
+  if (mimeType === "image/png") return "png";
+  if (mimeType === "image/webp") return "webp";
+  return null;
+}
+
+function assertValidArtImage(file: File) {
+  if (!ALLOWED_ART_IMAGE_TYPES.has(file.type)) {
+    throw new QueryError("Image must be a JPG, PNG, or WEBP file.", {
+      code: "INVALID_IMAGE_TYPE",
+      status: 400,
+    });
+  }
+
+  if (file.size > MAX_ART_IMAGE_BYTES) {
+    throw new QueryError("Image must be 5MB or smaller.", {
+      code: "IMAGE_TOO_LARGE",
+      status: 400,
+    });
+  }
+}
+
+async function getAuthenticatedUserId(): Promise<string> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getClaims();
+
+  if (error) {
+    throw new QueryError("Failed to fetch authenticated user.", {
+      code: "AUTH_ERROR",
+      status: 401,
+    });
+  }
+
+  const userId = data?.claims?.sub;
+
+  if (!userId) {
+    throw createUnauthorizedQueryError(
+      "You must be signed in to perform this action.",
+    );
+  }
+
+  return userId;
+}
 
 type PublicArtRow = Omit<PublicArt, "artist"> & {
   artist:
@@ -221,4 +292,89 @@ export async function deleteArt(id: number): Promise<void> {
   if (!data) {
     throw createNotFoundQueryError("Art not found or not accessible.");
   }
+}
+
+export async function uploadArtImage({
+  file,
+  slug,
+}: UploadArtImageInput): Promise<UploadedArtImage> {
+  assertValidArtImage(file);
+
+  const [supabase, userId] = await Promise.all([
+    createClient(),
+    getAuthenticatedUserId(),
+  ]);
+
+  const sanitizedSlug = sanitizeFileSegment(slug) || "art";
+  const extension = getFileExtensionFromMimeType(file.type);
+
+  if (!extension) {
+    throw new QueryError("Unsupported image type.", {
+      code: "INVALID_IMAGE_TYPE",
+      status: 400,
+    });
+  }
+
+  const imagePath = `${userId}/art/${sanitizedSlug}-${Date.now()}.${extension}`;
+
+  const { error } = await supabase.storage
+    .from(ART_IMAGES_BUCKET)
+    .upload(imagePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type,
+    });
+
+  if (error) {
+    throw new QueryError("Failed to upload artwork image.", {
+      code: error.name,
+      details: error.message,
+      status: 500,
+    });
+  }
+
+  return {
+    image_path: imagePath,
+  };
+}
+
+export async function deleteArtImage(imagePath: string): Promise<void> {
+  const [supabase, userId] = await Promise.all([
+    createClient(),
+    getAuthenticatedUserId(),
+  ]);
+
+  if (!imagePath.startsWith(`${userId}/`)) {
+    throw createUnauthorizedQueryError(
+      "You are not allowed to delete this artwork image.",
+    );
+  }
+
+  const { error } = await supabase.storage
+    .from(ART_IMAGES_BUCKET)
+    .remove([imagePath]);
+
+  if (error) {
+    throw new QueryError("Failed to delete artwork image.", {
+      code: error.name,
+      details: error.message,
+      status: 500,
+    });
+  }
+}
+
+export function getArtImagePublicUrl(imagePath: string): string {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!supabaseUrl) {
+    throw new QueryError(
+      "Missing NEXT_PUBLIC_SUPABASE_URL environment variable.",
+      {
+        code: "MISSING_ENV",
+        status: 500,
+      },
+    );
+  }
+
+  return `${supabaseUrl}/storage/v1/object/public/${ART_IMAGES_BUCKET}/${imagePath}`;
 }

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -21,7 +22,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPublicArt, getPrivateArt } from "@/lib/queries/art";
+import {
+  getArtImagePublicUrl,
+  getPublicArt,
+  getPrivateArt,
+} from "@/lib/queries/art";
 import { getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 
@@ -43,6 +48,7 @@ type ArtworkCardArt = {
   title: string;
   description: string | null;
   is_public: boolean;
+  image_path?: string | null;
   instagram_url?: string | null;
   etsy_url?: string | null;
   artist?: ArtworkCardArtist | null;
@@ -61,6 +67,15 @@ export async function ArtworkCard({
 }) {
   const artistName = art.artist?.name ?? "Unknown artist";
   const accentClass = CARD_ACCENTS[art.id % CARD_ACCENTS.length];
+  let imageUrl: string | null = null;
+
+  if (art.image_path) {
+    try {
+      imageUrl = getArtImagePublicUrl(art.image_path);
+    } catch {
+      imageUrl = null;
+    }
+  }
 
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border-border/60 bg-card/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -114,6 +129,19 @@ export async function ArtworkCard({
             </div>
           </div>
         </div>
+        {imageUrl ? (
+          <Link href={`/art/${art.slug}`} className="block px-6">
+            <div className="relative h-64 w-full overflow-hidden">
+              <Image
+                src={imageUrl}
+                alt={art.title}
+                fill
+                className="object-contain object-left p-1 transition-transform duration-500 group-hover:scale-[1.02]"
+                sizes="(min-width: 1080px) 33vw, (min-width: 520px) 50vw, 100vw"
+              />
+            </div>
+          </Link>
+        ) : null}
         <CardDescription className="px-6 line-clamp-4 text-sm leading-7 text-muted-foreground/95">
           {art.description?.trim() ||
             "This artwork does not have a description yet."}
