@@ -262,57 +262,6 @@ async function HomePageContent() {
         </div>
       </section>
 
-      <section className="space-y-5" aria-labelledby="platform-values-heading">
-        <div className="space-y-2">
-          <h2
-            id="platform-values-heading"
-            className="text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Why artists choose Aurora
-          </h2>
-          <p className="max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-            Two core principles guide the product experience: creator control
-            and audience clarity.
-          </p>
-        </div>
-
-        <div className="grid gap-6 min-[900px]:grid-cols-2">
-          <HeroBubble
-            badge={
-              <Badge
-                variant="secondary"
-                className="w-fit rounded-full border-transparent"
-              >
-                Control
-              </Badge>
-            }
-            eyebrow="Publish on your terms"
-            title="Keep private work private until it is ready to be seen."
-            description="Visibility settings and profile updates are designed to let artists test ideas, refine presentation, and decide exactly when each piece enters the public gallery."
-            className="h-full rounded-[1.75rem]"
-            titleClassName="text-2xl sm:text-3xl"
-            descriptionClassName="text-sm leading-7"
-          />
-
-          <HeroBubble
-            badge={
-              <Badge
-                variant="secondary"
-                className="w-fit rounded-full border-transparent"
-              >
-                Clarity
-              </Badge>
-            }
-            eyebrow="Simple discovery"
-            title="Help audiences move from browsing to meaningful engagement."
-            description="Clean profile and artwork pages reduce friction, making it easy for viewers to understand an artist's voice, follow their channels, and stay connected as new work appears."
-            className="h-full rounded-[1.75rem]"
-            titleClassName="text-2xl sm:text-3xl"
-            descriptionClassName="text-sm leading-7"
-          />
-        </div>
-      </section>
-
       <section className="space-y-5" aria-labelledby="featured-artist-heading">
         <div className="space-y-2">
           <h2
@@ -444,6 +393,108 @@ async function HomePageContent() {
           className="rounded-[2rem]"
           descriptionClassName="text-base leading-8"
         />
+      </section>
+
+      <section className="space-y-5" aria-labelledby="platform-values-heading">
+        <div className="space-y-2">
+          <h2
+            id="platform-values-heading"
+            className="text-3xl font-semibold tracking-tight sm:text-4xl"
+          >
+            Why artists choose Aurora
+          </h2>
+          <p className="max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
+            Two core principles guide the product experience: creator control
+            and audience clarity.
+          </p>
+        </div>
+
+        <div className="grid gap-6 min-[900px]:grid-cols-2">
+          <HeroBubble
+            badge={
+              <Badge
+                variant="secondary"
+                className="w-fit rounded-full border-transparent"
+              >
+                Control
+              </Badge>
+            }
+            eyebrow="Publish on your terms"
+            title="Keep private work private until it is ready to be seen."
+            description="Visibility settings and profile updates are designed to let artists test ideas, refine presentation, and decide exactly when each piece enters the public gallery."
+            className="h-full rounded-[1.75rem]"
+            titleClassName="text-2xl sm:text-3xl"
+            descriptionClassName="text-sm leading-7"
+          />
+
+          <HeroBubble
+            badge={
+              <Badge
+                variant="secondary"
+                className="w-fit rounded-full border-transparent"
+              >
+                Clarity
+              </Badge>
+            }
+            eyebrow="Simple discovery"
+            title="Help audiences move from browsing to meaningful engagement."
+            description="Clean profile and artwork pages reduce friction, making it easy for viewers to understand an artist's voice, follow their channels, and stay connected as new work appears."
+            className="h-full rounded-[1.75rem]"
+            titleClassName="text-2xl sm:text-3xl"
+            descriptionClassName="text-sm leading-7"
+          />
+        </div>
+      </section>
+
+      <section className="space-y-5" aria-labelledby="seo-benefits-heading">
+        <div className="space-y-2">
+          <h2
+            id="seo-benefits-heading"
+            className="text-3xl font-semibold tracking-tight sm:text-4xl"
+          >
+            Improve your online presence
+          </h2>
+          <p className="max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
+            Aurora Art Hub helps your work and profile get discovered through
+            search engines.
+          </p>
+        </div>
+
+        <div className="grid gap-6 min-[900px]:grid-cols-2">
+          <HeroBubble
+            badge={
+              <Badge
+                variant="secondary"
+                className="w-fit rounded-full border-transparent"
+              >
+                Visibility
+              </Badge>
+            }
+            eyebrow="Searchable profiles"
+            title="Your work appears in search results alongside your artist profile."
+            description="Each piece and profile is indexed by search engines, making your portfolio discoverable when people search for your name, style, or subject matter. Build discoverability without managing your own website."
+            className="h-full rounded-[1.75rem]"
+            titleClassName="text-2xl sm:text-3xl"
+            descriptionClassName="text-sm leading-7"
+          />
+
+          <HeroBubble
+            badge={
+              <Badge
+                variant="secondary"
+                className="w-fit rounded-full border-transparent"
+              >
+                Authority
+              </Badge>
+            }
+            eyebrow="Link back to your channels"
+            title="Direct connections to your website and storefronts boost your online presence."
+            description="Your Aurora profile links to your personal site, shop, and social channels. This helps search engines understand your online presence and sends interested viewers directly to where they can engage with your work."
+            className="h-full rounded-[1.75rem]"
+            titleClassName="text-2xl sm:text-3xl"
+            descriptionClassName="text-sm leading-7"
+          />
+        </div>
       </section>
     </section>
   );
