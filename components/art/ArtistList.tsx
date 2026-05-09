@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 
+import {
+  ArtistArtworkPreview,
+  type ArtistArtworkPreviewItem,
+} from "@/components/art/ArtistArtworkPreview";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -10,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
+import { getPublicArt } from "@/lib/queries/art";
 import { getPublicArtists } from "@/lib/queries/artist";
 
 const CARD_ACCENTS = [
@@ -20,7 +25,18 @@ const CARD_ACCENTS = [
 ];
 
 export async function ArtistList() {
-  const artists = await getPublicArtists();
+  const [artists, artworks] = await Promise.all([
+    getPublicArtists(),
+    getPublicArt(),
+  ]);
+
+  const artworksByArtist = new Map<number, ArtistArtworkPreviewItem[]>();
+
+  for (const art of artworks) {
+    const artistArtworks = artworksByArtist.get(art.artist_id) ?? [];
+    artistArtworks.push(art);
+    artworksByArtist.set(art.artist_id, artistArtworks);
+  }
 
   if (artists.length === 0) {
     return (
@@ -105,6 +121,11 @@ export async function ArtistList() {
                   </div>
                 </div>
               </div>
+              <ArtistArtworkPreview
+                artistId={artist.id}
+                artworks={artworksByArtist.get(artist.id) ?? []}
+                className="px-6"
+              />
               <CardDescription className="px-6 line-clamp-4 min-h-[5.25rem] text-sm leading-7 text-muted-foreground/95">
                 {artist.bio?.trim() || "This artist has not added a bio yet."}
               </CardDescription>

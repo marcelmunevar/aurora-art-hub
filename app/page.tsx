@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, MapPin, Sparkles } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 
+import { ArtistArtworkPreview } from "@/components/art/ArtistArtworkPreview";
 import { HeroBubble } from "@/components/hero-bubble";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,7 @@ export default function HomePage() {
 }
 
 type FeaturedArtist = {
+  id: number;
   slug: string;
   name: string;
   bio: string | null;
@@ -87,7 +89,7 @@ async function getRandomFeaturedArtist(): Promise<FeaturedArtist | null> {
   const { data, error } = await supabase
     .from("artist")
     .select(
-      "slug, name, bio, location, website, instagram_link, etsy_link, redbubble_link",
+      "id, slug, name, bio, location, website, instagram_link, etsy_link, redbubble_link",
     )
     .eq("is_public", true)
     .limit(100);
@@ -323,6 +325,16 @@ async function HomePageContent() {
           }
           className="rounded-[2rem]"
           descriptionClassName="text-base leading-8"
+          aside={
+            featuredArtist ? (
+              <ArtistArtworkPreview
+                artistId={featuredArtist.id}
+                className="w-full min-w-0 lg:w-[22rem]"
+                frameClassName="h-72 rounded-[1.75rem] bg-background/90"
+                sizes="(min-width: 1024px) 22rem, 100vw"
+              />
+            ) : null
+          }
         />
       </section>
 
