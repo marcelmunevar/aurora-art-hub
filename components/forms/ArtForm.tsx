@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import {
   getArtImagePublicUrl,
   createArt,
@@ -459,9 +459,17 @@ export async function ArtForm(props: ArtFormProps) {
               {submitLabel}
             </Button>
             {mode === "edit" && currentSlug ? (
-              <Button type="button" variant="outline" asChild>
-                <Link href={`/art/${currentSlug}`}>View artwork</Link>
-              </Button>
+              <div className="w-full sm:w-auto sm:min-w-52">
+                <SocialLinkButtons
+                  actionLinks={[
+                    {
+                      label: "View artwork",
+                      href: `/art/${currentSlug}`,
+                      kind: "view-artwork",
+                    },
+                  ]}
+                />
+              </div>
             ) : null}
           </div>
         </form>

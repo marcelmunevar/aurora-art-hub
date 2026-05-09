@@ -1,16 +1,15 @@
 import Link from "next/link";
-import { ExternalLink, Instagram, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import { getPublicArtists } from "@/lib/queries/artist";
 
 const CARD_ACCENTS = [
@@ -40,6 +39,32 @@ export async function ArtistList() {
     <div className="grid gap-5 min-[520px]:grid-cols-2 min-[1080px]:grid-cols-3">
       {artists.map((artist) => {
         const accentClass = CARD_ACCENTS[artist.id % CARD_ACCENTS.length];
+        const profileLinks = [
+          artist.website
+            ? {
+                label: "Website",
+                href: artist.website,
+              }
+            : null,
+          artist.instagram_link
+            ? {
+                label: "Instagram",
+                href: artist.instagram_link,
+              }
+            : null,
+          artist.redbubble_link
+            ? {
+                label: "Redbubble",
+                href: artist.redbubble_link,
+              }
+            : null,
+          artist.etsy_link
+            ? {
+                label: "Etsy",
+                href: artist.etsy_link,
+              }
+            : null,
+        ].filter(Boolean) as Array<{ label: string; href: string }>;
 
         return (
           <Card
@@ -84,55 +109,18 @@ export async function ArtistList() {
                 {artist.bio?.trim() || "This artist has not added a bio yet."}
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 space-y-3 text-sm text-muted-foreground">
-              {artist.website ? (
-                <div>
-                  <span className="font-medium text-foreground">Website:</span>{" "}
-                  <a
-                    href={artist.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline underline-offset-4"
-                  >
-                    Visit site
-                  </a>
-                </div>
-              ) : null}
-              {artist.instagram_link ? (
-                <div className="flex items-center gap-2">
-                  <Instagram className="h-4 w-4" />
-                  <a
-                    href={artist.instagram_link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline underline-offset-4"
-                  >
-                    Instagram
-                  </a>
-                </div>
-              ) : null}
-              {artist.etsy_link ? (
-                <div>
-                  <span className="font-medium text-foreground">Etsy:</span>{" "}
-                  <a
-                    href={artist.etsy_link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline underline-offset-4"
-                  >
-                    Shop
-                  </a>
-                </div>
-              ) : null}
+            <CardContent className="flex flex-1 flex-col justify-end gap-3">
+              <SocialLinkButtons
+                profileLinks={profileLinks}
+                actionLinks={[
+                  {
+                    label: "View profile",
+                    href: `/artist/${artist.slug}`,
+                    kind: "view-profile",
+                  },
+                ]}
+              />
             </CardContent>
-            <CardFooter className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
-              <Button asChild className="w-full min-w-0 rounded-full md:flex-1">
-                <Link href={`/artist/${artist.slug}`}>
-                  View profile
-                  <ExternalLink className="h-4 w-4" />
-                </Link>
-              </Button>
-            </CardFooter>
           </Card>
         );
       })}

@@ -12,12 +12,12 @@ export function AuthButton() {
 
   useEffect(() => {
     async function fetchSession() {
-      const { data, error } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
       setUser(data.session?.user ?? null);
     }
     fetchSession();
 
-    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
     });
     // call unsubscribe to remove the callback

@@ -1,28 +1,11 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import {
-  ExternalLink,
-  Instagram,
-  Lock,
-  MapPin,
-  Pencil,
-  Plus,
-  Store,
-  UserRound,
-} from "lucide-react";
+import { ExternalLink, Lock, MapPin, Plus, UserRound } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { HeroBubble } from "@/components/hero-bubble";
 import { StatCard } from "@/components/stat-card";
 import { ArtworkCard, ArtworkEmptyState } from "@/components/art/ArtList";
+import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import { getArtsByArtistId } from "@/lib/queries/art";
 import { getArtistBySlug, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
@@ -53,6 +36,32 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
   const publicArtworks = artworks.filter((art) => art.is_public);
   const privateArtworks = artworks.filter((art) => !art.is_public);
   const visibleArtworks = isOwner ? artworks : publicArtworks;
+  const profileLinks = [
+    artist.website
+      ? {
+          label: "Website",
+          href: artist.website,
+        }
+      : null,
+    artist.instagram_link
+      ? {
+          label: "Instagram",
+          href: artist.instagram_link,
+        }
+      : null,
+    artist.redbubble_link
+      ? {
+          label: "Redbubble",
+          href: artist.redbubble_link,
+        }
+      : null,
+    artist.etsy_link
+      ? {
+          label: "Etsy",
+          href: artist.etsy_link,
+        }
+      : null,
+  ].filter(Boolean) as Array<{ label: string; href: string }>;
 
   return (
     <section className="flex flex-col gap-8">
@@ -83,21 +92,27 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
         titleClassName="max-w-none text-inherit"
         descriptionClassName="max-w-2xl whitespace-pre-wrap"
         actions={
-          isOwner ? (
-            <>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/artist/edit">
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit profile
-                </Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/art/add">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add artwork
-                </Link>
-              </Button>
-            </>
+          profileLinks.length > 0 || isOwner ? (
+            <SocialLinkButtons
+              profileLinks={profileLinks}
+              actionLinks={
+                isOwner
+                  ? [
+                      {
+                        label: "Edit profile",
+                        href: "/artist/edit",
+                        kind: "edit-profile",
+                      },
+                      {
+                        label: "Add artwork",
+                        href: "/art/add",
+                        kind: "add-artwork",
+                      },
+                    ]
+                  : undefined
+              }
+              className="w-full sm:max-w-xs"
+            />
           ) : null
         }
         layoutClassName="gap-8"
@@ -136,33 +151,6 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
           </div>
         }
       />
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {artist.website ? (
-          <ArtistLinkCard
-            href={artist.website}
-            title="Website"
-            description="Visit the artist's main website."
-            icon={<ExternalLink className="h-4 w-4" />}
-          />
-        ) : null}
-        {artist.instagram_link ? (
-          <ArtistLinkCard
-            href={artist.instagram_link}
-            title="Instagram"
-            description="Open the artist's Instagram profile."
-            icon={<Instagram className="h-4 w-4" />}
-          />
-        ) : null}
-        {artist.etsy_link ? (
-          <ArtistLinkCard
-            href={artist.etsy_link}
-            title="Etsy"
-            description="Browse the artist's Etsy storefront."
-            icon={<Store className="h-4 w-4" />}
-          />
-        ) : null}
-      </div>
 
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -275,40 +263,5 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
         </div>
       ) : null}
     </section>
-  );
-}
-
-function ArtistLinkCard({
-  href,
-  title,
-  description,
-  icon,
-}: {
-  href: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Card className="rounded-[1.75rem] border-border/60 bg-card/95 shadow-sm">
-      <CardHeader className="space-y-3">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          {icon}
-          <span>{title}</span>
-        </div>
-        <CardTitle className="text-xl">{title}</CardTitle>
-        <CardDescription className="text-sm leading-6">
-          {description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button asChild variant="outline" className="w-full rounded-full">
-          <a href={href} target="_blank" rel="noreferrer">
-            Open {title}
-            <ExternalLink className="h-4 w-4" />
-          </a>
-        </Button>
-      </CardContent>
-    </Card>
   );
 }

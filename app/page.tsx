@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  ExternalLink,
-  Instagram,
-  MapPin,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, MapPin, Sparkles } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 
 import { HeroBubble } from "@/components/hero-bubble";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -141,6 +136,12 @@ async function HomePageContent() {
         },
       ].filter((item) => !!item.value)
     : [];
+  const profileLinks = featuredArtistInfo
+    .filter((item) => item.label !== "Location" && item.href)
+    .map((item) => ({
+      label: item.label,
+      href: item.href as string,
+    }));
 
   return (
     <section className="flex flex-col gap-14 pb-6">
@@ -297,87 +298,17 @@ async function HomePageContent() {
                     <span>{featuredArtist.location}</span>
                   </div>
                 )}
-                {featuredArtistInfo.length > 0 && (
-                  <div className="space-y-2">
-                    {featuredArtistInfo.map((item) => {
-                      if (item.label === "Location") return null;
-                      if (item.label === "Website") {
-                        return (
-                          <Button
-                            key={item.label}
-                            asChild
-                            className="w-full rounded-full"
-                          >
-                            <a
-                              href={item.href as string}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Visit website
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        );
-                      }
-                      if (item.label === "Instagram") {
-                        return (
-                          <Button
-                            key={item.label}
-                            asChild
-                            className="w-full rounded-full border-0 bg-gradient-to-r from-fuchsia-600 via-pink-500 to-orange-400 text-white hover:opacity-90"
-                          >
-                            <a
-                              href={item.href as string}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Instagram className="h-4 w-4" />
-                              View on Instagram
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        );
-                      }
-                      if (item.label === "Etsy") {
-                        return (
-                          <Button
-                            key={item.label}
-                            asChild
-                            className="w-full rounded-full bg-orange-600 text-white hover:bg-orange-700"
-                          >
-                            <a
-                              href={item.href as string}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Shop on Etsy
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        );
-                      }
-                      if (item.label === "Redbubble") {
-                        return (
-                          <Button
-                            key={item.label}
-                            asChild
-                            className="w-full rounded-full"
-                            variant="outline"
-                          >
-                            <a
-                              href={item.href as string}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Shop on Redbubble
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        );
-                      }
-                      return null;
-                    })}
-                  </div>
+                {(profileLinks.length > 0 || featuredArtist) && (
+                  <SocialLinkButtons
+                    profileLinks={profileLinks}
+                    actionLinks={[
+                      {
+                        label: "View profile",
+                        href: `/artist/${featuredArtist.slug}`,
+                        kind: "view-profile",
+                      },
+                    ]}
+                  />
                 )}
               </div>
             ) : (

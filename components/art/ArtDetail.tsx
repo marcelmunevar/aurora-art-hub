@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, Pencil, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 import { getArtBySlug, getArtImagePublicUrl } from "@/lib/queries/art";
 import { getArtistById, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import { LinkPreview } from "@/components/link-previews/link-preview";
 
 export async function ArtDetail({ artSlug }: { artSlug: string }) {
@@ -45,6 +44,21 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
     }
   }
 
+  const profileLinks = [
+    art.instagram_url
+      ? {
+          label: "Instagram",
+          href: art.instagram_url,
+        }
+      : null,
+    art.etsy_url
+      ? {
+          label: "Etsy",
+          href: art.etsy_url,
+        }
+      : null,
+  ].filter(Boolean) as Array<{ label: string; href: string }>;
+
   return (
     <section className="w-full flex flex-col gap-8">
       <div className="space-y-3">
@@ -74,18 +88,22 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
         </div>
       </div>
 
-      {art.etsy_url ? (
-        <div className="space-y-2">
-          <Button
-            asChild
-            className="w-full rounded-full bg-orange-600 text-white hover:bg-orange-700 sm:w-auto"
-          >
-            <a href={art.etsy_url} target="_blank" rel="noopener noreferrer">
-              <Sparkles className="h-4 w-4" />
-              Buy on Etsy
-              <ExternalLink className="h-4 w-4" />
-            </a>
-          </Button>
+      {profileLinks.length > 0 || isOwner ? (
+        <div className="space-y-2 sm:max-w-xs">
+          <SocialLinkButtons
+            profileLinks={profileLinks}
+            actionLinks={
+              isOwner
+                ? [
+                    {
+                      label: "Edit artwork",
+                      href: `/art/${art.slug}/edit`,
+                      kind: "edit-artwork",
+                    },
+                  ]
+                : undefined
+            }
+          />
         </div>
       ) : null}
 
@@ -105,17 +123,6 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
           style={{ width: "auto", height: "auto", maxHeight: "520px" }}
         />
       ) : null}
-
-      {isOwner && (
-        <div className="flex gap-3">
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/art/${art.slug}/edit`}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit artwork
-            </Link>
-          </Button>
-        </div>
-      )}
 
       {art.instagram_url ? (
         <div className="space-y-2">

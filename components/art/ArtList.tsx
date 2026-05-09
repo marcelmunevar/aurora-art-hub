@@ -1,14 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  ExternalLink,
-  Eye,
-  EyeOff,
-  Instagram,
-  Pencil,
-  Sparkles,
-} from "lucide-react";
+import { ArrowUpRight, Eye, EyeOff, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import {
   getArtImagePublicUrl,
   getPublicArt,
@@ -74,6 +67,21 @@ export async function ArtworkCard({
       imageUrl = null;
     }
   }
+
+  const profileLinks = [
+    art.etsy_url
+      ? {
+          label: "Etsy",
+          href: art.etsy_url,
+        }
+      : null,
+    art.instagram_url
+      ? {
+          label: "Instagram",
+          href: art.instagram_url,
+        }
+      : null,
+  ].filter(Boolean) as Array<{ label: string; href: string }>;
 
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border-border/60 bg-card/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -147,46 +155,26 @@ export async function ArtworkCard({
       </CardHeader>
       <CardContent className="flex-1" />
       <CardFooter className="flex flex-col gap-3">
-        {art.etsy_url ? (
-          <Button
-            asChild
-            className="w-full rounded-full bg-orange-600 text-white hover:bg-orange-700"
-          >
-            <a href={art.etsy_url} target="_blank" rel="noopener noreferrer">
-              <Sparkles className="h-4 w-4" />
-              Buy on Etsy
-              <ExternalLink className="h-4 w-4" />
-            </a>
-          </Button>
-        ) : null}
-        {art.instagram_url ? (
-          <Button
-            asChild
-            className="w-full rounded-full border-0 bg-gradient-to-r from-fuchsia-600 via-pink-500 to-orange-400 text-white hover:opacity-90"
-          >
-            <a
-              href={art.instagram_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Instagram className="h-4 w-4" />
-              View on Instagram
-              <ExternalLink className="h-4 w-4" />
-            </a>
-          </Button>
-        ) : null}
-        {isOwner ? (
-          <Button
-            asChild
-            variant="outline"
-            className="w-full min-w-0 rounded-full"
-          >
-            <Link href={`/art/${art.slug}/edit`}>
-              Edit artwork
-              <Pencil className="h-4 w-4" />
-            </Link>
-          </Button>
-        ) : null}
+        <SocialLinkButtons
+          profileLinks={profileLinks}
+          actionLinks={[
+            {
+              label: "View artwork",
+              href: `/art/${art.slug}`,
+              kind: "view-artwork",
+            },
+            ...(isOwner
+              ? [
+                  {
+                    label: "Edit artwork",
+                    href: `/art/${art.slug}/edit`,
+                    kind: "edit-artwork" as const,
+                  },
+                ]
+              : []),
+          ]}
+          className="w-full"
+        />
       </CardFooter>
     </Card>
   );
