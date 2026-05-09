@@ -88,6 +88,16 @@ async function fetchImageDataUrl(src: string): Promise<string | null> {
   }
 }
 
+export async function getLinkPreviewImageDataUrl(
+  url: string | null,
+): Promise<string | null> {
+  if (!url) return null;
+
+  const og = await fetchOG(url);
+
+  return og.image ? fetchImageDataUrl(og.image) : null;
+}
+
 export async function LinkPreview({
   url,
   className,
@@ -101,7 +111,6 @@ export async function LinkPreview({
     fetchOG(url),
     Promise.resolve(new URL(url).hostname.replace(/^www\./, "")),
   ]);
-
   const imageDataUrl = og.image ? await fetchImageDataUrl(og.image) : null;
 
   return (

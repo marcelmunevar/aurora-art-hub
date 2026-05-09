@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getLinkPreviewImageDataUrl } from "@/components/link-previews/link-preview";
 import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import {
   getArtImagePublicUrl,
@@ -66,6 +67,10 @@ export async function ArtworkCard({
     } catch {
       imageUrl = null;
     }
+  }
+
+  if (!imageUrl && art.instagram_url) {
+    imageUrl = await getLinkPreviewImageDataUrl(art.instagram_url);
   }
 
   const profileLinks = [
@@ -144,6 +149,19 @@ export async function ArtworkCard({
                 fill
                 className="object-contain object-left min-[1080px]:object-center"
                 sizes="(min-width: 1080px) 33vw, (min-width: 520px) 50vw, 100vw"
+              />
+            </div>
+          </Link>
+        ) : imageUrl ? (
+          <Link href={`/art/${art.slug}`} className="block px-6">
+            <div className="relative h-64 w-full overflow-hidden rounded-[1.5rem] border border-border/60 bg-background/80 shadow-sm">
+              <Image
+                src={imageUrl}
+                alt={art.title}
+                fill
+                className="object-cover"
+                sizes="(min-width: 1080px) 33vw, (min-width: 520px) 50vw, 100vw"
+                unoptimized
               />
             </div>
           </Link>
