@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -171,8 +170,7 @@ export async function ArtworkCard({
             "This artwork does not have a description yet."}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1" />
-      <CardFooter className="flex flex-col gap-3">
+      <CardFooter className="mt-auto flex flex-col gap-3">
         <SocialLinkButtons
           profileLinks={profileLinks}
           actionLinks={[

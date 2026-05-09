@@ -126,7 +126,7 @@ export async function ArtistList() {
                 artworks={artworksByArtist.get(artist.id) ?? []}
                 className="px-6"
               />
-              <CardDescription className="px-6 line-clamp-4 min-h-[5.25rem] text-sm leading-7 text-muted-foreground/95">
+              <CardDescription className="px-6 line-clamp-4 text-sm leading-7 text-muted-foreground/95">
                 {artist.bio?.trim() || "This artist has not added a bio yet."}
               </CardDescription>
             </CardHeader>
