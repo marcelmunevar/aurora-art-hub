@@ -6,7 +6,7 @@ import { LogoutButton } from "./logout-button";
 import { useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 
-export function AuthButton() {
+export function AuthButton({ stacked = false }: { stacked?: boolean } = {}) {
   const [user, setUser] = useState<User | null>(null);
   const supabase = createClient();
 
@@ -27,19 +27,39 @@ export function AuthButton() {
   }, [supabase]);
 
   return user ? (
-    <div className="flex items-center gap-4">
-      <Button asChild size="sm" variant="outline">
+    <div
+      className={
+        stacked
+          ? "flex flex-col items-stretch gap-2"
+          : "flex items-center gap-4"
+      }
+    >
+      <Button
+        asChild
+        size="sm"
+        variant="outline"
+        className={stacked ? "w-full justify-start" : undefined}
+      >
         <Link href="/dashboard">Dashboard</Link>
       </Button>
-      Hey, {user.email}!
-      <LogoutButton />
+      <LogoutButton className={stacked ? "w-full justify-start" : undefined} />
     </div>
   ) : (
-    <div className="flex gap-2">
-      <Button asChild size="sm" variant={"outline"}>
+    <div className={stacked ? "flex flex-col gap-2" : "flex gap-2"}>
+      <Button
+        asChild
+        size="sm"
+        variant={"outline"}
+        className={stacked ? "w-full justify-start" : undefined}
+      >
         <Link href="/auth/login">Sign in</Link>
       </Button>
-      <Button asChild size="sm" variant={"default"}>
+      <Button
+        asChild
+        size="sm"
+        variant={"default"}
+        className={stacked ? "w-full justify-start" : undefined}
+      >
         <Link href="/auth/sign-up">Sign up</Link>
       </Button>
     </div>
