@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { EnvVarWarning } from "@/components/env-var-warning";
@@ -22,6 +23,8 @@ import {
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
+
+const googleAnalyticsId = "G-RR83WMK0PP";
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
@@ -275,6 +278,7 @@ export default function RootLayout({
             </div>
           </main>
         </ThemeProvider>
+        <GoogleAnalytics gaId={googleAnalyticsId} />
       </body>
     </html>
   );
