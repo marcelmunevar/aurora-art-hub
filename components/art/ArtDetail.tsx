@@ -7,7 +7,6 @@ import { getArtistById, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
 import { Badge } from "@/components/ui/badge";
 import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
-import { LinkPreview } from "@/components/link-previews/link-preview";
 
 export async function ArtDetail({ artSlug }: { artSlug: string }) {
   const art = await getArtBySlug(artSlug);
@@ -122,15 +121,6 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
           className="self-start rounded-2xl object-contain"
           style={{ width: "auto", height: "auto", maxHeight: "520px" }}
         />
-      ) : null}
-
-      {art.instagram_url ? (
-        <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Instagram
-          </p>
-          <LinkPreview url={art.instagram_url} />
-        </div>
       ) : null}
     </section>
   );

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { getLinkPreviewImageDataUrl } from "@/components/link-previews/link-preview";
 import { getArtImagePublicUrl, getPublicArt } from "@/lib/queries/art";
 import { cn } from "@/lib/utils";
 
@@ -55,10 +54,6 @@ async function resolveArtistArtworkMedia(
     } catch {
       src = null;
     }
-  }
-
-  if (!src && selectedArtwork.instagram_url) {
-    src = await getLinkPreviewImageDataUrl(selectedArtwork.instagram_url);
   }
 
   if (!src) {

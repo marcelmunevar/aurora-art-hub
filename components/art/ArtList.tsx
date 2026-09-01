@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getLinkPreviewImageDataUrl } from "@/components/link-previews/link-preview";
+// Link preview support removed; no external preview image helper
 import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import {
   getArtImagePublicUrl,
@@ -67,10 +67,6 @@ export async function ArtworkCard({
     } catch {
       imageUrl = null;
     }
-  }
-
-  if (!imageUrl && art.instagram_url) {
-    imageUrl = await getLinkPreviewImageDataUrl(art.instagram_url);
   }
 
   const profileLinks = [
