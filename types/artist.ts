@@ -35,3 +35,16 @@ export interface UpdateArtistInput {
   location?: string | null;
   is_public?: boolean;
 }
+
+export type FeaturedArtist = Pick<
+  Artist,
+  | "id"
+  | "slug"
+  | "name"
+  | "bio"
+  | "location"
+  | "website"
+  | "instagram_link"
+  | "etsy_link"
+  | "redbubble_link"
+>;
