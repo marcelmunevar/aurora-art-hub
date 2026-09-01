@@ -57,14 +57,11 @@ const titleSchema = z
   .min(2, "Title must be at least 2 characters long.")
   .max(120, "Title must be 120 characters or fewer.");
 
-const descriptionSchema = z.preprocess(
-  normalizeOptionalText,
-  z
-    .string()
-    .max(2000, "Description must be 2000 characters or fewer.")
-    .nullable()
-    .optional(),
-);
+const descriptionSchema = z
+  .string()
+  .trim()
+  .min(1, "Description is required.")
+  .max(2000, "Description must be 2000 characters or fewer.");
 
 const isPublicSchema = z.preprocess(normalizeBoolean, z.boolean());
 
@@ -91,45 +88,44 @@ const instagramUrlSchema = z.preprocess(
     .optional(),
 );
 
-const imagePathSchema = z.preprocess(
-  normalizeOptionalText,
-  z
-    .string()
-    .max(1024, "Image path must be 1024 characters or fewer.")
-    .nullable()
-    .optional(),
-);
+const imagePathSchema = z
+  .string()
+  .trim()
+  .min(1, "Image is required.")
+  .max(1024, "Image path must be 1024 characters or fewer.");
 
 const imageDimensionSchema = z
   .number()
   .int("Image dimensions must be whole numbers.")
-  .positive("Image dimensions must be greater than zero.")
-  .nullable()
-  .optional();
+  .positive("Image dimensions must be greater than zero.");
 
-export const createArtSchema: z.ZodType<CreateArtInput> = z.object({
-  slug: slugSchema,
-  title: titleSchema,
-  description: descriptionSchema,
-  is_public: isPublicSchema.optional().default(false),
-  instagram_url: instagramUrlSchema,
-  etsy_url: optionalUrlSchema,
-  image_path: imagePathSchema,
-  image_width: imageDimensionSchema,
-  image_height: imageDimensionSchema,
-});
-
-export const updateArtSchema: z.ZodType<UpdateArtInput> = z
+export const createArtSchema: z.ZodType<CreateArtInput> = z
   .object({
-    slug: slugSchema.optional(),
-    title: titleSchema.optional(),
+    slug: slugSchema,
+    title: titleSchema,
     description: descriptionSchema,
-    is_public: isPublicSchema.optional(),
+    is_public: isPublicSchema.optional().default(false),
     instagram_url: instagramUrlSchema,
     etsy_url: optionalUrlSchema,
     image_path: imagePathSchema,
     image_width: imageDimensionSchema,
     image_height: imageDimensionSchema,
+  })
+  .refine((value) => !!(value.instagram_url || value.etsy_url), {
+    message: "Provide at least one social link: Instagram or Etsy.",
+  });
+
+export const updateArtSchema: z.ZodType<UpdateArtInput> = z
+  .object({
+    slug: slugSchema.optional(),
+    title: titleSchema.optional(),
+    description: descriptionSchema.optional(),
+    is_public: isPublicSchema.optional(),
+    instagram_url: instagramUrlSchema,
+    etsy_url: optionalUrlSchema,
+    image_path: imagePathSchema.optional(),
+    image_width: imageDimensionSchema.optional(),
+    image_height: imageDimensionSchema.optional(),
   })
   .refine(
     (value) =>

@@ -24,10 +24,6 @@ import {
 } from "@/lib/validation/artist";
 
 type ProfileFormProps = {
-  searchParams?: Promise<{
-    error?: string;
-    success?: string;
-  }>;
   errorMessage?: string | null;
   successMessage?: string | null;
 };
@@ -65,16 +61,9 @@ function getArtistInput(formData: FormData) {
 }
 
 export async function ProfileForm({
-  searchParams,
   errorMessage,
   successMessage,
 }: ProfileFormProps) {
-  const resolvedSearchParams = searchParams ? await searchParams : {};
-  const resolvedErrorMessage =
-    errorMessage ?? resolvedSearchParams.error ?? null;
-  const resolvedSuccessMessage =
-    successMessage ?? resolvedSearchParams.success ?? null;
-
   let artist: Artist | null;
 
   try {
@@ -89,11 +78,40 @@ export async function ProfileForm({
 
   const artistId = artist?.id ?? null;
   const previousSlug = artist?.slug ?? null;
+  const pageTitle = artist ? "Edit your profile" : "Create your profile";
+  const pageDescription =
+    "Manage the public artist profile shown on your artist page.";
+  const submitLabel = artist ? "Save profile" : "Create profile";
 
   async function submitProfile(formData: FormData) {
     "use server";
 
+    const getErrorRedirectUrl = (message: string) =>
+      `${EDIT_PATH}?error=${encodeURIComponent(message)}`;
+
     const input = getArtistInput(formData);
+
+    // Server-side presence checks for required fields and social link requirement
+    if (!input.name || input.name.trim().length === 0) {
+      redirect(getErrorRedirectUrl("Name is required."));
+    }
+
+    if (!input.bio || input.bio.trim().length === 0) {
+      redirect(getErrorRedirectUrl("Bio is required."));
+    }
+
+    if (!input.location || input.location.trim().length === 0) {
+      redirect(getErrorRedirectUrl("Location is required."));
+    }
+
+    const hasSocial = !!(input.instagram_link || input.etsy_link);
+    if (!hasSocial) {
+      redirect(
+        getErrorRedirectUrl(
+          "Provide at least one social link: Instagram or Etsy.",
+        ),
+      );
+    }
 
     if (artistId) {
       const result = safeValidateUpdateArtistInput(input);
@@ -101,7 +119,7 @@ export async function ProfileForm({
       if (!result.success) {
         const message =
           result.error.issues[0]?.message ?? "Invalid profile data.";
-        redirect(`${EDIT_PATH}?error=${encodeURIComponent(message)}`);
+        redirect(getErrorRedirectUrl(message));
       }
 
       let updatedArtist;
@@ -114,7 +132,7 @@ export async function ProfileForm({
             ? error.message
             : "Unable to save profile.";
 
-        redirect(`${EDIT_PATH}?error=${encodeURIComponent(message)}`);
+        redirect(getErrorRedirectUrl(message));
       }
 
       revalidatePath(`/artist/${updatedArtist.slug}`);
@@ -134,7 +152,7 @@ export async function ProfileForm({
     if (!result.success) {
       const message =
         result.error.issues[0]?.message ?? "Invalid profile data.";
-      redirect(`${EDIT_PATH}?error=${encodeURIComponent(message)}`);
+      redirect(getErrorRedirectUrl(message));
     }
 
     let createdArtist;
@@ -147,7 +165,7 @@ export async function ProfileForm({
           ? error.message
           : "Unable to save profile.";
 
-      redirect(`${EDIT_PATH}?error=${encodeURIComponent(message)}`);
+      redirect(getErrorRedirectUrl(message));
     }
 
     revalidatePath(`/artist/${createdArtist.slug}`);
@@ -159,29 +177,30 @@ export async function ProfileForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          {artist ? "Edit your profile" : "Create your profile"}
-        </CardTitle>
-        <CardDescription>
-          Manage the public artist profile shown on your artist page.
-        </CardDescription>
+        <CardTitle>{pageTitle}</CardTitle>
+        <CardDescription>{pageDescription}</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={submitProfile} className="space-y-6">
-          {resolvedErrorMessage ? (
+          {errorMessage ? (
             <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              {resolvedErrorMessage}
+              {errorMessage}
             </div>
           ) : null}
 
-          {resolvedSuccessMessage ? (
+          {successMessage ? (
             <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700">
-              {resolvedSuccessMessage}
+              {successMessage}
             </div>
           ) : null}
 
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">
+              Name
+              <span aria-hidden className="text-destructive ml-1">
+                *
+              </span>
+            </Label>
             <Input
               id="name"
               name="name"
@@ -192,7 +211,12 @@ export async function ProfileForm({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="bio">Bio</Label>
+            <Label htmlFor="bio">
+              Bio
+              <span aria-hidden className="text-destructive ml-1">
+                *
+              </span>
+            </Label>
             <textarea
               id="bio"
               name="bio"
@@ -200,17 +224,24 @@ export async function ProfileForm({
               defaultValue={artist?.bio ?? ""}
               className="flex min-h-32 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               placeholder="Write a short introduction about your work and practice."
+              required
             />
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
             <div className="grid gap-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">
+                Location
+                <span aria-hidden className="text-destructive ml-1">
+                  *
+                </span>
+              </Label>
               <Input
                 id="location"
                 name="location"
                 placeholder="Detroit, MI"
                 defaultValue={artist?.location ?? ""}
+                required
               />
             </div>
           </div>
@@ -281,7 +312,7 @@ export async function ProfileForm({
           </label>
 
           <Button type="submit" className="w-full md:w-auto">
-            {artist ? "Save profile" : "Create profile"}
+            {submitLabel}
           </Button>
         </form>
       </CardContent>

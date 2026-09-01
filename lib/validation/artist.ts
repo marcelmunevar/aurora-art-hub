@@ -57,23 +57,17 @@ const nameSchema = z
   .min(2, "Name must be at least 2 characters long.")
   .max(120, "Name must be 120 characters or fewer.");
 
-const bioSchema = z.preprocess(
-  normalizeOptionalText,
-  z
-    .string()
-    .max(4000, "Bio must be 4000 characters or fewer.")
-    .nullable()
-    .optional(),
-);
+const bioSchema = z
+  .string()
+  .trim()
+  .min(1, "Bio is required.")
+  .max(4000, "Bio must be 4000 characters or fewer.");
 
-const locationSchema = z.preprocess(
-  normalizeOptionalText,
-  z
-    .string()
-    .max(120, "Location must be 120 characters or fewer.")
-    .nullable()
-    .optional(),
-);
+const locationSchema = z
+  .string()
+  .trim()
+  .min(1, "Location is required.")
+  .max(120, "Location must be 120 characters or fewer.");
 
 const optionalUrlSchema = z.preprocess(
   normalizeOptionalText,
@@ -86,28 +80,32 @@ const optionalUrlSchema = z.preprocess(
 
 const isPublicSchema = z.preprocess(normalizeBoolean, z.boolean());
 
-export const createArtistSchema: z.ZodType<CreateArtistInput> = z.object({
-  slug: slugSchema,
-  name: nameSchema,
-  bio: bioSchema,
-  etsy_link: optionalUrlSchema,
-  instagram_link: optionalUrlSchema,
-  redbubble_link: optionalUrlSchema,
-  website: optionalUrlSchema,
-  location: locationSchema,
-  is_public: isPublicSchema.optional().default(false),
-});
-
-export const updateArtistSchema: z.ZodType<UpdateArtistInput> = z
+export const createArtistSchema: z.ZodType<CreateArtistInput> = z
   .object({
-    slug: slugSchema.optional(),
-    name: nameSchema.optional(),
+    slug: slugSchema,
+    name: nameSchema,
     bio: bioSchema,
     etsy_link: optionalUrlSchema,
     instagram_link: optionalUrlSchema,
     redbubble_link: optionalUrlSchema,
     website: optionalUrlSchema,
     location: locationSchema,
+    is_public: isPublicSchema.optional().default(false),
+  })
+  .refine((value) => !!(value.instagram_link || value.etsy_link), {
+    message: "Provide at least one social link: Instagram or Etsy.",
+  });
+
+export const updateArtistSchema: z.ZodType<UpdateArtistInput> = z
+  .object({
+    slug: slugSchema.optional(),
+    name: nameSchema.optional(),
+    bio: bioSchema.optional(),
+    etsy_link: optionalUrlSchema,
+    instagram_link: optionalUrlSchema,
+    redbubble_link: optionalUrlSchema,
+    website: optionalUrlSchema,
+    location: locationSchema.optional(),
     is_public: isPublicSchema.optional(),
   })
   .refine(

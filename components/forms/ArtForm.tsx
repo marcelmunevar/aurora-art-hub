@@ -153,6 +153,24 @@ export async function ArtForm(props: ArtFormProps) {
         ? formData.has("remove_image")
         : false;
 
+    // Server-side presence checks for required fields to provide clear errors
+    if (!baseInput.title || baseInput.title.trim().length === 0) {
+      redirect(getErrorRedirectUrl("Title is required."));
+    }
+
+    if (!baseInput.description || baseInput.description.trim().length === 0) {
+      redirect(getErrorRedirectUrl("Description is required."));
+    }
+
+    const hasSocial = !!(baseInput.instagram_url || baseInput.etsy_url);
+    if (!hasSocial) {
+      redirect(
+        getErrorRedirectUrl(
+          "Provide at least one social link: Instagram or Etsy.",
+        ),
+      );
+    }
+
     if (mode === "create") {
       let uploadedImagePath: string | null = null;
       let uploadedImageWidth: number | null = null;
@@ -184,6 +202,9 @@ export async function ArtForm(props: ArtFormProps) {
         image_width: uploadedImageWidth,
         image_height: uploadedImageHeight,
       };
+      if (!uploadedImagePath) {
+        redirect(getErrorRedirectUrl("Image is required."));
+      }
       const result = safeValidateCreateArtInput(input);
 
       if (!result.success) {
@@ -260,6 +281,17 @@ export async function ArtForm(props: ArtFormProps) {
             : "Unable to upload image.";
 
         redirect(getErrorRedirectUrl(message));
+      }
+    }
+
+    // For edit: ensure an image will exist after the update (either keep, replace, or error)
+    if (mode === "edit") {
+      const willHaveImage = !removeCurrentImage
+        ? (currentImagePath ?? !!newImagePath)
+        : !!newImagePath;
+
+      if (!willHaveImage) {
+        redirect(getErrorRedirectUrl("Image is required."));
       }
     }
 
@@ -356,7 +388,12 @@ export async function ArtForm(props: ArtFormProps) {
           ) : null}
 
           <div className="grid gap-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">
+              Title
+              <span aria-hidden className="text-destructive ml-1">
+                *
+              </span>
+            </Label>
             <Input
               id="title"
               name="title"
@@ -367,7 +404,12 @@ export async function ArtForm(props: ArtFormProps) {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">
+              Description
+              <span aria-hidden className="text-destructive ml-1">
+                *
+              </span>
+            </Label>
             <textarea
               id="description"
               name="description"
@@ -375,6 +417,7 @@ export async function ArtForm(props: ArtFormProps) {
               defaultValue={defaultDescription}
               className="flex min-h-36 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               placeholder="Describe the materials, process, story, or inspiration behind this piece."
+              required
             />
           </div>
 
@@ -419,7 +462,14 @@ export async function ArtForm(props: ArtFormProps) {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="image">Artwork image</Label>
+            <Label htmlFor="image">
+              Artwork image
+              {mode === "create" ? (
+                <span aria-hidden className="text-destructive ml-1">
+                  *
+                </span>
+              ) : null}
+            </Label>
             {mode === "edit" && currentImageUrl ? (
               <div className="relative h-56 w-full overflow-hidden rounded-xl">
                 <Image
@@ -436,6 +486,7 @@ export async function ArtForm(props: ArtFormProps) {
               name="image"
               type="file"
               accept="image/jpeg,image/png,image/webp"
+              required={mode === "create"}
             />
             {mode === "edit" && currentImagePath ? (
               <>
