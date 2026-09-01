@@ -87,6 +87,23 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
         </div>
       </div>
 
+      {imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={art.title}
+          width={art.image_width ?? 1200}
+          height={art.image_height ?? 900}
+          className="self-start rounded-2xl object-contain"
+          style={{ width: "auto", height: "auto", maxHeight: "520px" }}
+        />
+      ) : null}
+
+      {art.description && (
+        <p className="max-w-4xl whitespace-pre-wrap text-base leading-7 text-muted-foreground">
+          {art.description}
+        </p>
+      )}
+
       {profileLinks.length > 0 || isOwner ? (
         <div className="space-y-2 sm:max-w-xs">
           <SocialLinkButtons
@@ -104,23 +121,6 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
             }
           />
         </div>
-      ) : null}
-
-      {art.description && (
-        <p className="max-w-4xl whitespace-pre-wrap text-base leading-7 text-muted-foreground">
-          {art.description}
-        </p>
-      )}
-
-      {imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt={art.title}
-          width={art.image_width ?? 1200}
-          height={art.image_height ?? 900}
-          className="self-start rounded-2xl object-contain"
-          style={{ width: "auto", height: "auto", maxHeight: "520px" }}
-        />
       ) : null}
     </section>
   );
