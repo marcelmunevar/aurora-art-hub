@@ -220,16 +220,16 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
                   Artwork you have kept private on this artist page. Only you
                   can see these.
                 </p>
+                <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+                  Use this section as a staging area before publishing pieces to
+                  your public artist page.
+                </p>
               </div>
               <div className="space-y-3 text-sm text-muted-foreground sm:max-w-sm sm:text-right">
                 <div className="rounded-full border border-border/60 bg-muted/40 px-4 py-2 text-sm text-muted-foreground">
                   {privateArtworks.length} piece
                   {privateArtworks.length === 1 ? "" : "s"}
                 </div>
-                <p className="leading-6">
-                  Use this section as a staging area before publishing pieces to
-                  your public artist page.
-                </p>
               </div>
             </div>
 
