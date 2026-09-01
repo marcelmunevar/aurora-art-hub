@@ -85,7 +85,7 @@ export async function ArtistArtworkPreview({
     <Link href={media.href} className={cn("block", className)}>
       <div
         className={cn(
-          "relative h-64 w-full overflow-hidden border border-border/60 bg-background/80 shadow-sm",
+          "relative aspect-square w-full overflow-hidden border border-border/60 bg-background/80 shadow-sm",
           frameClassName,
         )}
       >
@@ -93,7 +93,7 @@ export async function ArtistArtworkPreview({
           src={media.src}
           alt={media.title}
           fill
-          className={cn("object-cover", imageClassName)}
+          className={cn("object-contain", imageClassName)}
           sizes={sizes}
           unoptimized
         />

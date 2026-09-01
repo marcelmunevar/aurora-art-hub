@@ -11,11 +11,14 @@ import {
 import type {
   Artist,
   CreateArtistInput,
+  PublicArtist,
   UpdateArtistInput,
 } from "@/types/artist";
 
 const ARTIST_COLUMNS =
   "id, user_id, slug, name, bio, etsy_link, instagram_link, redbubble_link, website, location, is_public";
+const PUBLIC_ARTIST_COLUMNS =
+  "id, slug, name, bio, etsy_link, instagram_link, redbubble_link, website, location, is_public";
 
 async function getAuthenticatedUserId(): Promise<string> {
   const supabase = await createClient();
@@ -94,12 +97,12 @@ export async function getCurrentUserArtist(): Promise<Artist | null> {
   return getArtistByUserId(userId);
 }
 
-export async function getPublicArtists(): Promise<Artist[]> {
+export async function getPublicArtists(): Promise<PublicArtist[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("artist")
-    .select(ARTIST_COLUMNS)
+    .select(PUBLIC_ARTIST_COLUMNS)
     .eq("is_public", true)
     .order("name", { ascending: true });
 
@@ -107,7 +110,7 @@ export async function getPublicArtists(): Promise<Artist[]> {
     throw createPostgrestQueryError("Failed to fetch public artists.", error);
   }
 
-  return (data ?? []) as Artist[];
+  return (data ?? []) as PublicArtist[];
 }
 
 export async function createArtist(input: CreateArtistInput): Promise<Artist> {

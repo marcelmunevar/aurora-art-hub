@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, MapPin, Sparkles } from "lucide-react";
-import { getPublicArtists } from "@/lib/queries/artist";
-import Image from "next/image";
-import type { FeaturedArtist } from "@/types/artist";
-import type { PublicArt } from "@/types/art";
-import { getPublicArt, getArtImagePublicUrl } from "@/lib/queries/art";
+import { ArrowRight, Sparkles } from "lucide-react";
 
-import { ArtistArtworkPreview } from "@/components/art/ArtistArtworkPreview";
+import { FeaturedArt } from "@/components/art/FeaturedArt";
+import { FeaturedArtist } from "@/components/art/FeaturedArtist";
 import { HeroBubble } from "@/components/hero-bubble";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -89,7 +84,7 @@ export default function HomePage() {
             </div>
           }
         >
-          <FeaturedArtistSection />
+          <FeaturedArtist />
         </Suspense>
       </section>
       <section className="space-y-5" aria-labelledby="featured-artwork-heading">
@@ -112,7 +107,7 @@ export default function HomePage() {
             </div>
           }
         >
-          <FeaturedArtworkSection />
+          <FeaturedArt />
         </Suspense>
       </section>
       <section
@@ -203,234 +198,5 @@ export default function HomePage() {
         </div>
       </section>
     </section>
-  );
-}
-
-async function getRandomFeaturedArtist(): Promise<FeaturedArtist | null> {
-  try {
-    const artists = await getPublicArtists();
-    if (!artists || artists.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * artists.length);
-    return artists[randomIndex] as FeaturedArtist;
-  } catch {
-    return null;
-  }
-}
-
-async function FeaturedArtistSection() {
-  const featuredArtist = await getRandomFeaturedArtist();
-
-  return (
-    <HeroBubble
-      badge={
-        <Badge className="w-fit rounded-full border-transparent bg-foreground text-background">
-          Artist spotlight
-        </Badge>
-      }
-      eyebrow="Featured now"
-      title={
-        featuredArtist ? (
-          <div className="space-y-4">
-            <Link
-              href={`/artist/${featuredArtist.slug}`}
-              className="block text-3xl sm:text-4xl font-semibold tracking-tight hover:underline underline-offset-4"
-            >
-              {featuredArtist.name}
-            </Link>
-            {featuredArtist.location && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4 flex-shrink-0" />
-                <span>{featuredArtist.location}</span>
-              </div>
-            )}
-            {featuredArtist &&
-              (featuredArtist.website ||
-                featuredArtist.instagram_link ||
-                featuredArtist.etsy_link ||
-                featuredArtist.redbubble_link) && (
-                <SocialLinkButtons
-                  profileLinks={[
-                    ...(featuredArtist.website
-                      ? [{ label: "Website", href: featuredArtist.website }]
-                      : []),
-                    ...(featuredArtist.instagram_link
-                      ? [
-                          {
-                            label: "Instagram",
-                            href: featuredArtist.instagram_link,
-                          },
-                        ]
-                      : []),
-                    ...(featuredArtist.etsy_link
-                      ? [{ label: "Etsy", href: featuredArtist.etsy_link }]
-                      : []),
-                    ...(featuredArtist.redbubble_link
-                      ? [
-                          {
-                            label: "Redbubble",
-                            href: featuredArtist.redbubble_link,
-                          },
-                        ]
-                      : []),
-                  ]}
-                  actionLinks={[
-                    {
-                      label: "View profile",
-                      href: `/artist/${featuredArtist.slug}`,
-                      kind: "view-profile",
-                    },
-                  ]}
-                />
-              )}
-          </div>
-        ) : (
-          "A featured artist will appear here once public profiles are available."
-        )
-      }
-      description={
-        featuredArtist
-          ? featuredArtist.bio?.trim() ||
-            `${featuredArtist.name} is currently featured in the Aurora spotlight.${featuredArtist.location ? ` Based in ${featuredArtist.location}.` : ""}`
-          : "Publish artist profiles to power this spotlight with live community data."
-      }
-      className="rounded-[2rem]"
-      descriptionClassName="text-base leading-8"
-      aside={
-        featuredArtist ? (
-          <ArtistArtworkPreview
-            artistId={featuredArtist.id}
-            className="w-full min-w-0 lg:w-[22rem]"
-            frameClassName="h-72 rounded-[1.75rem] bg-background/90"
-            sizes="(min-width: 1024px) 22rem, 100vw"
-          />
-        ) : null
-      }
-    />
-  );
-}
-
-async function getRandomFeaturedArt(): Promise<PublicArt | null> {
-  try {
-    const arts = await getPublicArt();
-
-    if (!arts || arts.length === 0) return null;
-
-    const randomIndex = Math.floor(Math.random() * arts.length);
-    return arts[randomIndex] as PublicArt;
-  } catch {
-    return null;
-  }
-}
-
-async function FeaturedArtworkSection() {
-  const featuredArt = await getRandomFeaturedArt();
-
-  let imageSrc: string | null = null;
-
-  if (featuredArt?.image_path) {
-    try {
-      imageSrc = getArtImagePublicUrl(featuredArt.image_path);
-    } catch {
-      imageSrc = null;
-    }
-  }
-
-  return (
-    <HeroBubble
-      badge={
-        <Badge className="w-fit rounded-full border-transparent bg-foreground text-background">
-          Artwork spotlight
-        </Badge>
-      }
-      eyebrow="Featured now"
-      title={
-        featuredArt ? (
-          <div className="space-y-4">
-            <Link
-              href={`/art/${featuredArt.slug}`}
-              className="block text-3xl sm:text-4xl font-semibold tracking-tight hover:underline underline-offset-4"
-            >
-              {featuredArt.title}
-            </Link>
-            {featuredArt.artist && (
-              <Link
-                href={`/artist/${featuredArt.artist.slug}`}
-                className="text-sm text-muted-foreground hover:underline underline-offset-4"
-              >
-                {featuredArt.artist.name}
-              </Link>
-            )}
-            {(featuredArt.instagram_url || featuredArt.etsy_url) && (
-              <SocialLinkButtons
-                profileLinks={[
-                  ...(featuredArt.instagram_url
-                    ? [{ label: "Instagram", href: featuredArt.instagram_url }]
-                    : []),
-                  ...(featuredArt.etsy_url
-                    ? [{ label: "Etsy", href: featuredArt.etsy_url }]
-                    : []),
-                ]}
-                actionLinks={
-                  featuredArt.artist
-                    ? [
-                        {
-                          label: "View artwork",
-                          href: `/art/${featuredArt.slug}`,
-                          kind: "view-artwork",
-                        },
-                        {
-                          label: "View artist",
-                          href: `/artist/${featuredArt.artist.slug}`,
-                          kind: "view-profile",
-                        },
-                      ]
-                    : [
-                        {
-                          label: "View artwork",
-                          href: `/art/${featuredArt.slug}`,
-                          kind: "view-artwork",
-                        },
-                      ]
-                }
-                className="pt-1"
-              />
-            )}
-          </div>
-        ) : (
-          "A featured artwork will appear here once public pieces are available."
-        )
-      }
-      description={
-        featuredArt
-          ? featuredArt.description ||
-            "A highlighted piece from the Aurora gallery."
-          : "Publish artwork to populate this spotlight with live community work."
-      }
-      className="rounded-[2rem]"
-      descriptionClassName="text-base leading-8"
-      aside={
-        featuredArt ? (
-          <ArtistArtworkPreview
-            artistId={featuredArt.artist_id}
-            artworks={
-              featuredArt
-                ? [
-                    {
-                      artist_id: featuredArt.artist_id,
-                      slug: featuredArt.slug,
-                      title: featuredArt.title,
-                      image_path: featuredArt.image_path,
-                      instagram_url: featuredArt.instagram_url,
-                    },
-                  ]
-                : undefined
-            }
-            className="w-full min-w-0 lg:w-[22rem]"
-            frameClassName="h-72 rounded-[1.75rem] bg-background/90"
-            sizes="(min-width: 1024px) 22rem, 100vw"
-          />
-        ) : null
-      }
-    />
   );
 }

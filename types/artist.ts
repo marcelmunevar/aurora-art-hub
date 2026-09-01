@@ -36,15 +36,4 @@ export interface UpdateArtistInput {
   is_public?: boolean;
 }
 
-export type FeaturedArtist = Pick<
-  Artist,
-  | "id"
-  | "slug"
-  | "name"
-  | "bio"
-  | "location"
-  | "website"
-  | "instagram_link"
-  | "etsy_link"
-  | "redbubble_link"
->;
+export type PublicArtist = Omit<Artist, "user_id">;
