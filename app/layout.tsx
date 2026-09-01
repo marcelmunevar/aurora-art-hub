@@ -199,7 +199,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col gap-10 items-center">
+            <div className="flex-1 w-full flex flex-col items-center">
               <nav className="relative w-full flex justify-center border-b border-b-foreground/10 h-16 overflow-hidden bg-[radial-gradient(circle_at_12%_22%,rgba(255,255,255,0.45)_1px,transparent_1.3px),radial-gradient(circle_at_36%_70%,rgba(255,255,255,0.28)_1px,transparent_1.2px),radial-gradient(circle_at_68%_18%,rgba(255,255,255,0.35)_1px,transparent_1.3px),radial-gradient(circle_at_87%_58%,rgba(255,255,255,0.3)_1px,transparent_1.2px),linear-gradient(90deg,rgba(8,47,73,0.86),rgba(6,78,59,0.82),rgba(30,41,59,0.86))]">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
@@ -263,7 +263,7 @@ export default function RootLayout({
                 </div>
               </nav>
               <div className="w-full flex justify-center h-16">
-                <div className="w-full max-w-5xl ">
+                <div className="w-full max-w-5xl p-5">
                   <Suspense>
                     <Breadcrumbs className="mb-4" />
                   </Suspense>
