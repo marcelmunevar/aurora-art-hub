@@ -471,13 +471,13 @@ export async function ArtForm(props: ArtFormProps) {
               ) : null}
             </Label>
             {mode === "edit" && currentImageUrl ? (
-              <div className="relative h-56 w-full overflow-hidden rounded-xl">
+              <div className="relative aspect-square w-64 max-w-full sm:w-72 md:w-96 overflow-hidden rounded-xl">
                 <Image
                   src={currentImageUrl}
                   alt={`${defaultTitle || "Artwork"} image`}
                   fill
-                  className="object-cover"
-                  sizes="(min-width: 768px) 672px, 100vw"
+                  className="object-contain bg-background/80"
+                  sizes="(min-width: 768px) 28rem, 18rem"
                 />
               </div>
             ) : null}
