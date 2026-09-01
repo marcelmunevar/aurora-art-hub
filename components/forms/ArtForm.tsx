@@ -10,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CancelButton } from "@/components/ui/cancel-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import {
   getArtImagePublicUrl,
   createArt,
@@ -509,19 +509,7 @@ export async function ArtForm(props: ArtFormProps) {
             <Button type="submit" className="w-full sm:w-auto">
               {submitLabel}
             </Button>
-            {mode === "edit" && currentSlug ? (
-              <div className="w-full sm:w-auto sm:min-w-52">
-                <SocialLinkButtons
-                  actionLinks={[
-                    {
-                      label: "View artwork",
-                      href: `/art/${currentSlug}`,
-                      kind: "view-artwork",
-                    },
-                  ]}
-                />
-              </div>
-            ) : null}
+            <CancelButton />
           </div>
         </form>
       </CardContent>

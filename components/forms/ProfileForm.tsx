@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CancelButton } from "@/components/ui/cancel-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { QueryError } from "@/lib/queries/errors";
@@ -311,9 +312,12 @@ export async function ProfileForm({
             </span>
           </label>
 
-          <Button type="submit" className="w-full md:w-auto">
-            {submitLabel}
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button type="submit" className="w-full sm:w-auto">
+              {submitLabel}
+            </Button>
+            <CancelButton />
+          </div>
         </form>
       </CardContent>
     </Card>
