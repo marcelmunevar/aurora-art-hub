@@ -53,7 +53,7 @@ export function HeroBubble({
             </p>
             <div
               className={cn(
-                "max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl",
+                "max-w-2xl text-4xl font-semibold sm:text-5xl",
                 titleClassName,
               )}
             >
