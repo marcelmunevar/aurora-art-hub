@@ -1,18 +1,5 @@
-import Image from "next/image";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CancelButton } from "@/components/ui/cancel-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   getArtImagePublicUrl,
   createArt,
