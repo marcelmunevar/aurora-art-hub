@@ -107,13 +107,18 @@ export const createArtSchema: z.ZodType<CreateArtInput> = z
     is_public: isPublicSchema.optional().default(false),
     instagram_url: instagramUrlSchema,
     etsy_url: optionalUrlSchema,
+    redbubble_url: optionalUrlSchema,
     image_path: imagePathSchema,
     image_width: imageDimensionSchema,
     image_height: imageDimensionSchema,
   })
-  .refine((value) => !!(value.instagram_url || value.etsy_url), {
-    message: "Provide at least one social link: Instagram or Etsy.",
-  });
+  .refine(
+    (value) => !!(value.instagram_url || value.etsy_url || value.redbubble_url),
+    {
+      message:
+        "Provide at least one social link: Instagram, Etsy, or Redbubble.",
+    },
+  );
 
 export const updateArtSchema: z.ZodType<UpdateArtInput> = z
   .object({
@@ -123,6 +128,7 @@ export const updateArtSchema: z.ZodType<UpdateArtInput> = z
     is_public: isPublicSchema.optional(),
     instagram_url: instagramUrlSchema,
     etsy_url: optionalUrlSchema,
+    redbubble_url: optionalUrlSchema,
     image_path: imagePathSchema.optional(),
     image_width: imageDimensionSchema.optional(),
     image_height: imageDimensionSchema.optional(),

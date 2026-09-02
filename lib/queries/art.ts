@@ -19,7 +19,7 @@ import type {
 } from "@/types/art";
 
 const ART_COLUMNS =
-  "id, artist_id, slug, title, description, is_public, instagram_url, etsy_url, image_path, image_width, image_height";
+  "id, artist_id, slug, title, description, is_public, instagram_url, etsy_url, redbubble_url, image_path, image_width, image_height";
 const PUBLIC_ART_COLUMNS = `${ART_COLUMNS}, artist:artist_id(id, name, slug)`;
 const ART_IMAGES_BUCKET = "art-images";
 const ALLOWED_ART_IMAGE_TYPES = new Set([

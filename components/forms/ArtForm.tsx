@@ -78,6 +78,7 @@ function getArtInput(formData: FormData): CreateArtInput {
     is_public: formData.has("is_public"),
     instagram_url: getStringValue(formData, "instagram_url"),
     etsy_url: getStringValue(formData, "etsy_url"),
+    redbubble_url: getStringValue(formData, "redbubble_url"),
   };
 }
 
@@ -127,6 +128,7 @@ export async function ArtForm(props: ArtFormProps) {
   const defaultIsPublic = art?.is_public ?? false;
   const defaultInstagramUrl = art?.instagram_url ?? "";
   const defaultEtsyUrl = art?.etsy_url ?? "";
+  const defaultRedbubbleUrl = art?.redbubble_url ?? "";
   const currentImagePath = art?.image_path ?? null;
   const currentImageUrl = currentImagePath
     ? (() => {
@@ -371,6 +373,7 @@ export async function ArtForm(props: ArtFormProps) {
       defaultIsPublic={defaultIsPublic}
       defaultInstagramUrl={defaultInstagramUrl}
       defaultEtsyUrl={defaultEtsyUrl}
+      defaultRedbubbleUrl={defaultRedbubbleUrl}
       currentImageUrl={currentImageUrl}
       currentImagePath={currentImagePath}
     />

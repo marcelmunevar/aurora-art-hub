@@ -9,6 +9,7 @@ export interface Art {
   is_public: boolean;
   instagram_url: string | null;
   etsy_url: string | null;
+  redbubble_url: string | null;
   image_path: string | null;
   image_width: number | null;
   image_height: number | null;
@@ -21,6 +22,7 @@ export interface CreateArtInput {
   is_public?: boolean;
   instagram_url?: string | null;
   etsy_url?: string | null;
+  redbubble_url?: string | null;
   image_path?: string | null;
   image_width?: number | null;
   image_height?: number | null;
@@ -37,6 +39,7 @@ export interface UpdateArtInput {
   is_public?: boolean;
   instagram_url?: string | null;
   etsy_url?: string | null;
+  redbubble_url?: string | null;
   image_path?: string | null;
   image_width?: number | null;
   image_height?: number | null;

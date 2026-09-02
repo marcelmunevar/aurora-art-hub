@@ -27,6 +27,7 @@ type Props = {
   defaultIsPublic: boolean;
   defaultInstagramUrl: string;
   defaultEtsyUrl: string;
+  defaultRedbubbleUrl: string;
   currentImageUrl: string | null;
   currentImagePath: string | null;
 };
@@ -44,6 +45,7 @@ export default function ArtFormFields(props: Props) {
     defaultIsPublic,
     defaultInstagramUrl,
     defaultEtsyUrl,
+    defaultRedbubbleUrl,
     currentImageUrl,
     currentImagePath,
   } = props;
@@ -58,6 +60,7 @@ export default function ArtFormFields(props: Props) {
   const [isPublic, setIsPublic] = useState<boolean>(defaultIsPublic);
   const [instagramUrl, setInstagramUrl] = useState<string>(defaultInstagramUrl);
   const [etsyUrl, setEtsyUrl] = useState<string>(defaultEtsyUrl);
+  const [redbubbleUrl, setRedbubbleUrl] = useState<string>(defaultRedbubbleUrl);
   const [removeImage, setRemoveImage] = useState<boolean>(false);
 
   return (
@@ -156,6 +159,18 @@ export default function ArtFormFields(props: Props) {
               placeholder="https://www.etsy.com/listing/..."
               value={etsyUrl}
               onChange={(e) => setEtsyUrl(e.target.value)}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="redbubble_url">Redbubble listing URL</Label>
+            <Input
+              id="redbubble_url"
+              name="redbubble_url"
+              type="url"
+              placeholder="https://www.redbubble.com/people/.../works/..."
+              value={redbubbleUrl}
+              onChange={(e) => setRedbubbleUrl(e.target.value)}
             />
           </div>
 

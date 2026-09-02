@@ -82,6 +82,12 @@ export async function ArtworkCard({
           href: art.instagram_url,
         }
       : null,
+    art.redbubble_url
+      ? {
+          label: "Redbubble",
+          href: art.redbubble_url,
+        }
+      : null,
   ].filter(Boolean) as Array<{ label: string; href: string }>;
 
   return (
