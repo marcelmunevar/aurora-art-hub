@@ -8,7 +8,7 @@ import { AuthButton } from "@/components/auth-button";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Suspense } from "react";
-import { hasEnvVars } from "@/lib/utils";
+import { getSiteUrl, hasEnvVars } from "@/lib/utils";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+const defaultUrl = getSiteUrl();
 
 const googleAnalyticsId = "G-RR83WMK0PP";
 
