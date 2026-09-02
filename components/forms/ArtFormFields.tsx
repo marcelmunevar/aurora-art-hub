@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { CancelButton } from "@/components/ui/cancel-button";
@@ -62,6 +62,53 @@ export default function ArtFormFields(props: Props) {
   const [etsyUrl, setEtsyUrl] = useState<string>(defaultEtsyUrl);
   const [redbubbleUrl, setRedbubbleUrl] = useState<string>(defaultRedbubbleUrl);
   const [removeImage, setRemoveImage] = useState<boolean>(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
+
+  const ALLOWED_IMAGE_TYPES = new Set([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+  ]);
+  const CLIENT_MAX_BYTES = 3 * 1024 * 1024; // 3 MB recommended client-side limit
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    if (!file) {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      setFileError(null);
+      return;
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setFileError("Image must be JPG, PNG, or WEBP.");
+      e.currentTarget.value = "";
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      return;
+    }
+
+    if (file.size > CLIENT_MAX_BYTES) {
+      setFileError("Image must be 3MB or smaller.");
+      e.currentTarget.value = "";
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      return;
+    }
+
+    setFileError(null);
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  }
+
+  // cleanup object URL when unmounting or when preview changes
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   return (
     <Card>
@@ -200,7 +247,20 @@ export default function ArtFormFields(props: Props) {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               required={mode === "create"}
+              onChange={handleFileChange}
             />
+            {fileError ? (
+              <p className="text-sm text-destructive">{fileError}</p>
+            ) : null}
+            {previewUrl ? (
+              <div className="relative aspect-square w-64 max-w-full sm:w-72 md:w-96 overflow-hidden rounded-xl">
+                <img
+                  src={previewUrl}
+                  alt="Selected artwork preview"
+                  className="object-contain w-full h-full bg-background/80"
+                />
+              </div>
+            ) : null}
             {mode === "edit" && currentImagePath ? (
               <>
                 <p className="text-xs text-muted-foreground">
