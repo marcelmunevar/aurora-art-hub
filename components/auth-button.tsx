@@ -38,7 +38,14 @@ export function AuthButton({ stacked = false }: { stacked?: boolean } = {}) {
     fetchArtist();
 
     const { data } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null);
+      const current = session?.user ?? null;
+      setUser(current);
+      // refresh artist slug whenever auth state changes
+      if (current) {
+        fetchArtist();
+      } else {
+        setArtistSlug(null);
+      }
     });
     // call unsubscribe to remove the callback
     return () => {
