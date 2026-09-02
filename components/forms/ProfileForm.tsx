@@ -1,17 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CancelButton } from "@/components/ui/cancel-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { QueryError } from "@/lib/queries/errors";
 import {
   createArtist,
@@ -23,9 +12,9 @@ import {
   safeValidateCreateArtistInput,
   safeValidateUpdateArtistInput,
 } from "@/lib/validation/artist";
+import ProfileFormFields from "@/components/forms/ProfileFormFields";
 
 type ProfileFormProps = {
-  errorMessage?: string | null;
   successMessage?: string | null;
 };
 
@@ -61,10 +50,7 @@ function getArtistInput(formData: FormData) {
   };
 }
 
-export async function ProfileForm({
-  errorMessage,
-  successMessage,
-}: ProfileFormProps) {
+export async function ProfileForm({ successMessage }: ProfileFormProps) {
   let artist: Artist | null;
 
   try {
@@ -84,34 +70,29 @@ export async function ProfileForm({
     "Manage the public artist profile shown on your artist page.";
   const submitLabel = artist ? "Save profile" : "Create profile";
 
-  async function submitProfile(formData: FormData) {
+  async function submitProfile(
+    _prevState: { error: string | null },
+    formData: FormData,
+  ): Promise<{ error: string | null }> {
     "use server";
-
-    const getErrorRedirectUrl = (message: string) =>
-      `${EDIT_PATH}?error=${encodeURIComponent(message)}`;
 
     const input = getArtistInput(formData);
 
-    // Server-side presence checks for required fields and social link requirement
     if (!input.name || input.name.trim().length === 0) {
-      redirect(getErrorRedirectUrl("Name is required."));
+      return { error: "Name is required." };
     }
 
     if (!input.bio || input.bio.trim().length === 0) {
-      redirect(getErrorRedirectUrl("Bio is required."));
+      return { error: "Bio is required." };
     }
 
     if (!input.location || input.location.trim().length === 0) {
-      redirect(getErrorRedirectUrl("Location is required."));
+      return { error: "Location is required." };
     }
 
     const hasSocial = !!(input.instagram_link || input.etsy_link);
     if (!hasSocial) {
-      redirect(
-        getErrorRedirectUrl(
-          "Provide at least one social link: Instagram or Etsy.",
-        ),
-      );
+      return { error: "Provide at least one social link: Instagram or Etsy." };
     }
 
     if (artistId) {
@@ -120,7 +101,7 @@ export async function ProfileForm({
       if (!result.success) {
         const message =
           result.error.issues[0]?.message ?? "Invalid profile data.";
-        redirect(getErrorRedirectUrl(message));
+        return { error: message };
       }
 
       let updatedArtist;
@@ -133,7 +114,7 @@ export async function ProfileForm({
             ? error.message
             : "Unable to save profile.";
 
-        redirect(getErrorRedirectUrl(message));
+        return { error: message };
       }
 
       revalidatePath(`/artist/${updatedArtist.slug}`);
@@ -146,6 +127,7 @@ export async function ProfileForm({
       redirect(
         `${EDIT_PATH}?success=${encodeURIComponent("Profile updated.")}`,
       );
+      return { error: null };
     }
 
     const result = safeValidateCreateArtistInput(input);
@@ -153,7 +135,7 @@ export async function ProfileForm({
     if (!result.success) {
       const message =
         result.error.issues[0]?.message ?? "Invalid profile data.";
-      redirect(getErrorRedirectUrl(message));
+      return { error: message };
     }
 
     let createdArtist;
@@ -166,160 +148,31 @@ export async function ProfileForm({
           ? error.message
           : "Unable to save profile.";
 
-      redirect(getErrorRedirectUrl(message));
+      return { error: message };
     }
 
     revalidatePath(`/artist/${createdArtist.slug}`);
     revalidatePath(EDIT_PATH);
 
     redirect(`${EDIT_PATH}?success=${encodeURIComponent("Profile created.")}`);
+    return { error: null };
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{pageTitle}</CardTitle>
-        <CardDescription>{pageDescription}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form action={submitProfile} className="space-y-6">
-          {errorMessage ? (
-            <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              {errorMessage}
-            </div>
-          ) : null}
-
-          {successMessage ? (
-            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700">
-              {successMessage}
-            </div>
-          ) : null}
-
-          <div className="grid gap-2">
-            <Label htmlFor="name">
-              Name
-              <span aria-hidden className="text-destructive ml-1">
-                *
-              </span>
-            </Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="Aurora Studio"
-              defaultValue={artist?.name ?? ""}
-              required
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="bio">
-              Bio
-              <span aria-hidden className="text-destructive ml-1">
-                *
-              </span>
-            </Label>
-            <textarea
-              id="bio"
-              name="bio"
-              rows={6}
-              defaultValue={artist?.bio ?? ""}
-              className="flex min-h-32 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              placeholder="Write a short introduction about your work and practice."
-              required
-            />
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="location">
-                Location
-                <span aria-hidden className="text-destructive ml-1">
-                  *
-                </span>
-              </Label>
-              <Input
-                id="location"
-                name="location"
-                placeholder="Detroit, MI"
-                defaultValue={artist?.location ?? ""}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                name="website"
-                type="url"
-                placeholder="https://yourstudio.com"
-                defaultValue={artist?.website ?? ""}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="instagram_link">Instagram</Label>
-              <Input
-                id="instagram_link"
-                name="instagram_link"
-                type="url"
-                placeholder="https://instagram.com/yourhandle"
-                defaultValue={artist?.instagram_link ?? ""}
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="etsy_link">Etsy</Label>
-              <Input
-                id="etsy_link"
-                name="etsy_link"
-                type="url"
-                placeholder="https://etsy.com/shop/yourshop"
-                defaultValue={artist?.etsy_link ?? ""}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="redbubble_link">Redbubble</Label>
-              <Input
-                id="redbubble_link"
-                name="redbubble_link"
-                type="url"
-                placeholder="https://redbubble.com/people/yourshop"
-                defaultValue={artist?.redbubble_link ?? ""}
-              />
-            </div>
-          </div>
-
-          <label className="flex items-start gap-3 rounded-md border p-4 text-sm">
-            <input
-              type="checkbox"
-              name="is_public"
-              defaultChecked={artist?.is_public ?? false}
-              className="mt-0.5 h-4 w-4 rounded border-input"
-            />
-            <span>
-              <span className="block font-medium text-foreground">
-                Public profile
-              </span>
-              <span className="block text-muted-foreground">
-                Allow your artist page to appear in public listings.
-              </span>
-            </span>
-          </label>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button type="submit" className="w-full sm:w-auto">
-              {submitLabel}
-            </Button>
-            <CancelButton />
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+    <ProfileFormFields
+      submitAction={submitProfile}
+      pageTitle={pageTitle}
+      pageDescription={pageDescription}
+      submitLabel={submitLabel}
+      successMessage={successMessage ?? null}
+      defaultName={artist?.name ?? ""}
+      defaultBio={artist?.bio ?? ""}
+      defaultLocation={artist?.location ?? ""}
+      defaultWebsite={artist?.website ?? ""}
+      defaultInstagramLink={artist?.instagram_link ?? ""}
+      defaultEtsyLink={artist?.etsy_link ?? ""}
+      defaultRedbubbleLink={artist?.redbubble_link ?? ""}
+      defaultIsPublic={artist?.is_public ?? false}
+    />
   );
 }

@@ -8,6 +8,7 @@ import { User } from "@supabase/supabase-js";
 
 export function AuthButton({ stacked = false }: { stacked?: boolean } = {}) {
   const [user, setUser] = useState<User | null>(null);
+  const [artistSlug, setArtistSlug] = useState<string | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -16,6 +17,25 @@ export function AuthButton({ stacked = false }: { stacked?: boolean } = {}) {
       setUser(data.session?.user ?? null);
     }
     fetchSession();
+
+    async function fetchArtist() {
+      const session = await supabase.auth.getSession();
+      const currentUser = session.data.session?.user ?? null;
+      if (!currentUser) return setArtistSlug(null);
+
+      const { data, error } = await supabase
+        .from("artist")
+        .select("slug")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+      if (!error && data) {
+        setArtistSlug((data as any).slug ?? null);
+      } else {
+        setArtistSlug(null);
+      }
+    }
+    fetchArtist();
 
     const { data } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
@@ -40,7 +60,9 @@ export function AuthButton({ stacked = false }: { stacked?: boolean } = {}) {
         variant="outline"
         className={stacked ? "w-full justify-start" : undefined}
       >
-        <Link href="/dashboard">Dashboard</Link>
+        <Link href={artistSlug ? `/artist/${artistSlug}` : "/artist/edit"}>
+          Dashboard
+        </Link>
       </Button>
       <LogoutButton className={stacked ? "w-full justify-start" : undefined} />
     </div>

@@ -119,10 +119,7 @@ async function ArtistEditPageContent({ searchParams }: ArtistEditPageProps) {
             : "Update the artist profile attached to your account."}
         </p>
       </div>
-      <ProfileForm
-        errorMessage={resolvedSearchParams.error ?? null}
-        successMessage={resolvedSearchParams.success ?? null}
-      />
+      <ProfileForm successMessage={resolvedSearchParams.success ?? null} />
     </div>
   );
 }

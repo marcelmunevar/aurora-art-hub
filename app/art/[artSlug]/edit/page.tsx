@@ -11,7 +11,6 @@ import {
 import { ArtForm } from "@/components/forms/ArtForm";
 
 type EditArtSearchParams = {
-  error?: string;
   success?: string;
 };
 
@@ -77,7 +76,6 @@ async function EditArtFormContent({
     <ArtForm
       mode="edit"
       artSlug={resolvedParams.artSlug}
-      errorMessage={resolvedSearchParams.error ?? null}
       successMessage={resolvedSearchParams.success ?? null}
     />
   );

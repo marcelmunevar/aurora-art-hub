@@ -11,7 +11,6 @@ import {
 import { ArtForm } from "@/components/forms/ArtForm";
 
 type AddArtSearchParams = {
-  error?: string;
   success?: string;
 };
 
@@ -29,7 +28,6 @@ async function AddArtFormContent({ searchParams }: AddArtFormContentProps) {
   return (
     <ArtForm
       mode="create"
-      errorMessage={resolvedSearchParams.error ?? null}
       successMessage={resolvedSearchParams.success ?? null}
     />
   );

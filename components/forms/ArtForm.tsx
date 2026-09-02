@@ -30,7 +30,6 @@ import {
 import type { CreateArtInput } from "@/types/art";
 
 type BaseArtFormProps = {
-  errorMessage?: string | null;
   successMessage?: string | null;
 };
 
@@ -82,8 +81,10 @@ function getArtInput(formData: FormData): CreateArtInput {
   };
 }
 
+import ArtFormFields from "./ArtFormFields";
+
 export async function ArtForm(props: ArtFormProps) {
-  const { mode, errorMessage, successMessage } = props;
+  const { mode, successMessage } = props;
   let artist;
 
   try {
@@ -137,14 +138,11 @@ export async function ArtForm(props: ArtFormProps) {
       })()
     : null;
 
-  const errorRedirectBasePath =
-    mode === "create" ? "/art/add" : `/art/${currentSlug}/edit`;
-
-  async function submitArt(formData: FormData) {
+  async function submitArt(
+    _prevState: { error: string | null },
+    formData: FormData,
+  ): Promise<{ error: string | null }> {
     "use server";
-
-    const getErrorRedirectUrl = (message: string) =>
-      `${errorRedirectBasePath}?error=${encodeURIComponent(message)}`;
 
     const baseInput = getArtInput(formData);
     const imageFile = getImageFileValue(formData, "image");
@@ -155,20 +153,16 @@ export async function ArtForm(props: ArtFormProps) {
 
     // Server-side presence checks for required fields to provide clear errors
     if (!baseInput.title || baseInput.title.trim().length === 0) {
-      redirect(getErrorRedirectUrl("Title is required."));
+      return { error: "Title is required." };
     }
 
     if (!baseInput.description || baseInput.description.trim().length === 0) {
-      redirect(getErrorRedirectUrl("Description is required."));
+      return { error: "Description is required." };
     }
 
     const hasSocial = !!(baseInput.instagram_url || baseInput.etsy_url);
     if (!hasSocial) {
-      redirect(
-        getErrorRedirectUrl(
-          "Provide at least one social link: Instagram or Etsy.",
-        ),
-      );
+      return { error: "Provide at least one social link: Instagram or Etsy." };
     }
 
     if (mode === "create") {
@@ -192,7 +186,7 @@ export async function ArtForm(props: ArtFormProps) {
               ? error.message
               : "Unable to upload image.";
 
-          redirect(getErrorRedirectUrl(message));
+          return { error: message };
         }
       }
 
@@ -203,7 +197,7 @@ export async function ArtForm(props: ArtFormProps) {
         image_height: uploadedImageHeight,
       };
       if (!uploadedImagePath) {
-        redirect(getErrorRedirectUrl("Image is required."));
+        return { error: "Image is required." };
       }
       const result = safeValidateCreateArtInput(input);
 
@@ -217,7 +211,7 @@ export async function ArtForm(props: ArtFormProps) {
         }
 
         const message = result.error.issues[0]?.message ?? "Invalid art data.";
-        redirect(getErrorRedirectUrl(message));
+        return { error: message };
       }
 
       let createdArt;
@@ -238,7 +232,7 @@ export async function ArtForm(props: ArtFormProps) {
             ? error.message
             : "Unable to create art.";
 
-        redirect(getErrorRedirectUrl(message));
+        return { error: message };
       }
 
       revalidatePath("/art");
@@ -258,11 +252,9 @@ export async function ArtForm(props: ArtFormProps) {
     let newImageHeight: number | null = null;
 
     if (removeCurrentImage && imageFile) {
-      redirect(
-        getErrorRedirectUrl(
-          "Choose either a new image upload or remove the current image.",
-        ),
-      );
+      return {
+        error: "Choose either a new image upload or remove the current image.",
+      };
     }
 
     if (imageFile) {
@@ -280,7 +272,7 @@ export async function ArtForm(props: ArtFormProps) {
             ? error.message
             : "Unable to upload image.";
 
-        redirect(getErrorRedirectUrl(message));
+        return { error: message };
       }
     }
 
@@ -291,7 +283,7 @@ export async function ArtForm(props: ArtFormProps) {
         : !!newImagePath;
 
       if (!willHaveImage) {
-        redirect(getErrorRedirectUrl("Image is required."));
+        return { error: "Image is required." };
       }
     }
 
@@ -313,7 +305,7 @@ export async function ArtForm(props: ArtFormProps) {
       }
 
       const message = result.error.issues[0]?.message ?? "Invalid art data.";
-      redirect(getErrorRedirectUrl(message));
+      return { error: message };
     }
 
     let updatedArt;
@@ -334,7 +326,7 @@ export async function ArtForm(props: ArtFormProps) {
           ? error.message
           : "Unable to save art.";
 
-      redirect(getErrorRedirectUrl(message));
+      return { error: message };
     }
 
     revalidatePath("/art");
@@ -361,158 +353,26 @@ export async function ArtForm(props: ArtFormProps) {
     }
 
     redirect(
-      `/art/${updatedArt.slug}/edit?success=${encodeURIComponent(
-        "Art updated.",
-      )}`,
+      `/art/${updatedArt.slug}/edit?success=${encodeURIComponent("Art updated.")}`,
     );
+    // Unreachable: successful update redirects the user.
+    return { error: null };
   }
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{pageTitle}</CardTitle>
-        <CardDescription>{pageDescription}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form action={submitArt} className="space-y-6">
-          {errorMessage ? (
-            <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              {errorMessage}
-            </div>
-          ) : null}
-
-          {successMessage ? (
-            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700">
-              {successMessage}
-            </div>
-          ) : null}
-
-          <div className="grid gap-2">
-            <Label htmlFor="title">
-              Title
-              <span aria-hidden className="text-destructive ml-1">
-                *
-              </span>
-            </Label>
-            <Input
-              id="title"
-              name="title"
-              placeholder="Aurora Study"
-              defaultValue={defaultTitle}
-              required
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="description">
-              Description
-              <span aria-hidden className="text-destructive ml-1">
-                *
-              </span>
-            </Label>
-            <textarea
-              id="description"
-              name="description"
-              rows={8}
-              defaultValue={defaultDescription}
-              className="flex min-h-36 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              placeholder="Describe the materials, process, story, or inspiration behind this piece."
-              required
-            />
-          </div>
-
-          <label className="flex items-start gap-3 rounded-md border p-4 text-sm">
-            <input
-              type="checkbox"
-              name="is_public"
-              defaultChecked={defaultIsPublic}
-              className="mt-0.5 h-4 w-4 rounded border-input"
-            />
-            <span>
-              <span className="block font-medium text-foreground">
-                Public artwork
-              </span>
-              <span className="block text-muted-foreground">
-                Allow this artwork to appear in public listings and profile
-                views.
-              </span>
-            </span>
-          </label>
-
-          <div className="grid gap-2">
-            <Label htmlFor="instagram_url">Instagram post URL</Label>
-            <Input
-              id="instagram_url"
-              name="instagram_url"
-              type="url"
-              placeholder="https://www.instagram.com/p/..."
-              defaultValue={defaultInstagramUrl}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="etsy_url">Etsy listing URL</Label>
-            <Input
-              id="etsy_url"
-              name="etsy_url"
-              type="url"
-              placeholder="https://www.etsy.com/listing/..."
-              defaultValue={defaultEtsyUrl}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="image">
-              Artwork image
-              {mode === "create" ? (
-                <span aria-hidden className="text-destructive ml-1">
-                  *
-                </span>
-              ) : null}
-            </Label>
-            {mode === "edit" && currentImageUrl ? (
-              <div className="relative aspect-square w-64 max-w-full sm:w-72 md:w-96 overflow-hidden rounded-xl">
-                <Image
-                  src={currentImageUrl}
-                  alt={`${defaultTitle || "Artwork"} image`}
-                  fill
-                  className="object-contain bg-background/80"
-                  sizes="(min-width: 768px) 28rem, 18rem"
-                />
-              </div>
-            ) : null}
-            <Input
-              id="image"
-              name="image"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              required={mode === "create"}
-            />
-            {mode === "edit" && currentImagePath ? (
-              <>
-                <p className="text-xs text-muted-foreground">
-                  A new upload will replace the current artwork image.
-                </p>
-                <label className="mt-1 inline-flex items-center gap-2 text-sm text-muted-foreground">
-                  <input
-                    type="checkbox"
-                    name="remove_image"
-                    className="h-4 w-4 rounded border-input"
-                  />
-                  Remove current image
-                </label>
-              </>
-            ) : null}
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button type="submit" className="w-full sm:w-auto">
-              {submitLabel}
-            </Button>
-            <CancelButton />
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+    <ArtFormFields
+      mode={mode}
+      submitAction={submitArt}
+      pageTitle={pageTitle}
+      pageDescription={pageDescription}
+      submitLabel={submitLabel}
+      successMessage={successMessage ?? null}
+      defaultTitle={defaultTitle}
+      defaultDescription={defaultDescription}
+      defaultIsPublic={defaultIsPublic}
+      defaultInstagramUrl={defaultInstagramUrl}
+      defaultEtsyUrl={defaultEtsyUrl}
+      currentImageUrl={currentImageUrl}
+      currentImagePath={currentImagePath}
+    />
   );
 }
