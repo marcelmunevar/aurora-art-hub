@@ -43,6 +43,7 @@ type ArtworkCardArt = {
   image_path?: string | null;
   instagram_url?: string | null;
   etsy_url?: string | null;
+  redbubble_url?: string | null;
   artist?: ArtworkCardArtist | null;
 };
 

@@ -48,8 +48,9 @@ export default function ProfileFormFields({
   defaultRedbubbleLink,
   defaultIsPublic,
 }: Props) {
-  const [state, action] = useActionState(submitAction, { error: null });
-  const isPending = state && state._pending;
+  const [state, action, isPending] = useActionState(submitAction, {
+    error: null,
+  });
 
   const [name, setName] = useState(defaultName);
   const [bio, setBio] = useState(defaultBio);
@@ -60,7 +61,7 @@ export default function ProfileFormFields({
   const [redbubbleLink, setRedbubbleLink] = useState(defaultRedbubbleLink);
   const [isPublic, setIsPublic] = useState(defaultIsPublic);
 
-  const error = (state && (state as any).error) || null;
+  const error = state?.error ?? null;
 
   return (
     <Card>
