@@ -8,6 +8,8 @@ import { FeaturedArtist } from "@/components/art/FeaturedArtist";
 import { HeroBubble } from "@/components/hero-bubble";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { JsonLd } from "@/components/json-ld";
+import { getSiteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -34,6 +36,14 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <section className="flex flex-col gap-14 pb-6">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Aurora Art Hub",
+          url: getSiteUrl(),
+        }}
+      />
       <HeroBubble
         badge={
           <Badge className="w-fit rounded-full border-transparent bg-foreground text-background">

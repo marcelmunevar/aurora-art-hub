@@ -9,6 +9,8 @@ import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 import { getArtsByArtistId } from "@/lib/queries/art";
 import { getArtistBySlug, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
+import { JsonLd } from "@/components/json-ld";
+import { getSiteUrl } from "@/lib/utils";
 
 export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
   const artist = await getArtistBySlug(artistSlug);
@@ -65,6 +67,19 @@ export async function ArtistDetail({ artistSlug }: { artistSlug: string }) {
 
   return (
     <section className="flex flex-col gap-8">
+      {artist.is_public && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name: artist.name,
+            description: artist.bio ?? undefined,
+            url: `${getSiteUrl()}/artist/${artist.slug}`,
+            address: artist.location ?? undefined,
+            sameAs: profileLinks.map((link) => link.href),
+          }}
+        />
+      )}
       <HeroBubble
         badge={<span className="sr-only">Artist profile</span>}
         eyebrow="Artist"

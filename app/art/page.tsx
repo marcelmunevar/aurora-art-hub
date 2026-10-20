@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import Link from "next/link";
@@ -43,6 +44,19 @@ function ArtListFallback() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Art",
+  description:
+    "Browse public artwork shared by Aurora Art Hub artists and open each piece for more details.",
+  alternates: { canonical: "/art" },
+  openGraph: {
+    title: "Art | Aurora Art Hub",
+    description:
+      "Browse public artwork shared by Aurora Art Hub artists and open each piece for more details.",
+    url: "/art",
+  },
+};
 
 export default function Page() {
   return (

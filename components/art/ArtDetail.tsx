@@ -5,6 +5,8 @@ import Image from "next/image";
 import { getArtBySlug, getArtImagePublicUrl } from "@/lib/queries/art";
 import { getArtistById, getCurrentUserArtist } from "@/lib/queries/artist";
 import { QueryError } from "@/lib/queries/errors";
+import { JsonLd } from "@/components/json-ld";
+import { getSiteUrl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { SocialLinkButtons } from "@/components/ui/social-link-buttons";
 
@@ -85,6 +87,25 @@ export async function ArtDetail({ artSlug }: { artSlug: string }) {
 
   return (
     <section className="w-full flex flex-col gap-8">
+      {art.is_public && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "VisualArtwork",
+            name: art.title,
+            description: art.description ?? undefined,
+            image: imageUrl,
+            url: `${getSiteUrl()}/art/${art.slug}`,
+            creator: artist
+              ? {
+                  "@type": "Person",
+                  name: artist.name,
+                  url: `${getSiteUrl()}/artist/${artist.slug}`,
+                }
+              : undefined,
+          }}
+        />
+      )}
       <div className="space-y-3">
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Artwork

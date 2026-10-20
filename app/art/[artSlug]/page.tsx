@@ -11,7 +11,7 @@ export async function generateMetadata({
 
   // Only expose rich metadata for public artwork; keep private/missing pieces generic.
   if (!art || !art.is_public) {
-    return { title: "Artwork" };
+    return { title: "Artwork", robots: { index: false, follow: false } };
   }
 
   const description =

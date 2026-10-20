@@ -11,7 +11,7 @@ export async function generateMetadata({
 
   // Only expose rich metadata for public profiles; keep private/missing ones generic.
   if (!artist || !artist.is_public) {
-    return { title: "Artist" };
+    return { title: "Artist", robots: { index: false, follow: false } };
   }
 
   const description =
